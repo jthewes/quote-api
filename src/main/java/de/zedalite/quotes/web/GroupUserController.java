@@ -4,7 +4,6 @@ import de.zedalite.quotes.data.model.ErrorResponse;
 import de.zedalite.quotes.data.model.GroupUserRequest;
 import de.zedalite.quotes.data.model.GroupUserResponse;
 import de.zedalite.quotes.data.model.UserPrincipal;
-import de.zedalite.quotes.data.model.UserResponse;
 import de.zedalite.quotes.service.GroupUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -47,7 +46,7 @@ public class GroupUserController {
         content = {
           @Content(
             mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = UserResponse.class))
+            array = @ArraySchema(schema = @Schema(implementation = GroupUserResponse.class))
           ),
         }
       ),
@@ -77,7 +76,7 @@ public class GroupUserController {
       @ApiResponse(
         responseCode = "200",
         description = "Group user found",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupUserResponse.class))
       ),
       @ApiResponse(
         responseCode = "403",
@@ -100,6 +99,9 @@ public class GroupUserController {
     return ResponseEntity.ok(service.find(id, userId));
   }
 
+  /**
+   * @deprecated Use invitation code instead
+   */
   @Operation(
     summary = "Create a new group user",
     description = "Create a new group user",
@@ -129,6 +131,7 @@ public class GroupUserController {
   )
   @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
   @PostMapping("{id}/users")
+  @Deprecated(since = "1.6.0", forRemoval = true)
   public ResponseEntity<GroupUserResponse> createUser(
     @PathVariable("id") final Integer id,
     @RequestBody @Valid final GroupUserRequest request
