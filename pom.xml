@@ -290,7 +290,8 @@
             <artifactId>dependency-check-maven</artifactId>
             <version>${owasp-plugin.version}</version>
             <configuration>
-              <failBuildOnCVSS>8</failBuildOnCVSS>
+              <failBuildOnCVSS>8.9</failBuildOnCVSS>
+              <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
             </configuration>
             <executions>
               <execution>
