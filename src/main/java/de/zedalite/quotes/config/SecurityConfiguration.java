@@ -42,15 +42,14 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
     http
       .cors(c -> c.configurationSource(getCorsConfiguration()))
-      .authorizeHttpRequests(
-        authz ->
-          authz
-            .requestMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**")
-            .permitAll()
-            .requestMatchers("/users")
-            .hasRole(GUEST.toString())
-            .anyRequest()
-            .hasRole(MEMBER.toString())
+      .authorizeHttpRequests(authz ->
+        authz
+          .requestMatchers("/actuator/**", "/v3/api-docs/**", "/swagger-ui/**")
+          .permitAll()
+          .requestMatchers("/users")
+          .hasRole(GUEST.toString())
+          .anyRequest()
+          .hasRole(MEMBER.toString())
       )
       .csrf(AbstractHttpConfigurer::disable) // https://security.stackexchange.com/questions/170388/do-i-need-csrf-token-if-im-using-bearer-jwt
       .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

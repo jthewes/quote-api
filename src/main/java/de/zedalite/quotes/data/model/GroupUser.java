@@ -12,5 +12,5 @@ public record GroupUser(
 
   @Schema(description = "User's unique identifier", example = "5") @NotNull Integer userId,
 
-  @Schema(description = "User's group display name", example = "5") @NotNull String userDisplayName
+  @Schema(description = "User's group display name", example = "Steeeeeve") String userDisplayName
 ) {}

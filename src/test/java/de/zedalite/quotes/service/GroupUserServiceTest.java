@@ -14,12 +14,14 @@ import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupUser;
 import de.zedalite.quotes.data.model.GroupUserRequest;
 import de.zedalite.quotes.data.model.GroupUserResponse;
+import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.ResourceAlreadyExitsException;
 import de.zedalite.quotes.exception.ResourceNotFoundException;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import de.zedalite.quotes.fixtures.GroupGenerator;
 import de.zedalite.quotes.fixtures.GroupUserGenerator;
+import de.zedalite.quotes.fixtures.UserGenerator;
 import de.zedalite.quotes.repository.GroupUserRepository;
 import de.zedalite.quotes.repository.UserRepository;
 import java.util.List;
@@ -101,6 +103,22 @@ class GroupUserServiceTest {
 
     then(repository).should().findById(1, 2);
     assertThat(result).isNotNull();
+    assertThat(result.displayName()).isEqualTo(expectedGroupUser.userDisplayName());
+  }
+
+  @Test
+  @DisplayName("Should find group user with no extra displayname")
+  void shouldFindGroupUserWithNoExtraDisplayname() {
+    final GroupUser expectedGroupUser = GroupUserGenerator.getGroupUserWithoutDisplayName();
+    final User expectedUser = UserGenerator.getUser();
+    willReturn(expectedGroupUser).given(repository).findById(1, 1);
+    willReturn(expectedUser).given(userRepository).findById(1);
+
+    final GroupUserResponse result = instance.find(1, 1);
+
+    then(repository).should().findById(1, 1);
+    assertThat(result).isNotNull();
+    assertThat(result.displayName()).isEqualTo(expectedUser.displayName());
   }
 
   @Test
@@ -114,14 +132,19 @@ class GroupUserServiceTest {
   @Test
   @DisplayName("Should find group users")
   void shouldFindGroupUsers() {
-    final List<GroupUser> expectedUsers = List.of(GroupUserGenerator.getGroupUser());
+    final List<GroupUser> expectedUsers = GroupUserGenerator.getGroupUsers();
+    final User expectedUser = UserGenerator.getUser();
     willReturn(expectedUsers).given(repository).findUsers(1);
+    willReturn(expectedUser).given(userRepository).findById(anyInt());
 
     final List<GroupUserResponse> result = instance.findAll(1);
 
     then(repository).should().findUsers(1);
-    assertThat(result).hasSizeGreaterThanOrEqualTo(1);
+    assertThat(result).hasSizeGreaterThanOrEqualTo(2);
     assertThat(result.getFirst()).isNotNull();
+    assertThat(result.getFirst().displayName()).isEqualTo(expectedUsers.getFirst().userDisplayName());
+    assertThat(result.get(1)).isNotNull();
+    assertThat(result.get(1).displayName()).isEqualTo("TESTER");
   }
 
   @Test

@@ -51,6 +51,9 @@ public class GroupUserService {
     try {
       final GroupUser groupUser = repository.findById(id, userId);
       final User user = userRepository.findById(groupUser.userId());
+      if (groupUser.userDisplayName() == null) {
+        return GROUP_USER_MAPPER.mapToResponse(user, user.displayName());
+      }
       return GROUP_USER_MAPPER.mapToResponse(user, groupUser.userDisplayName());
     } catch (final UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
@@ -64,6 +67,10 @@ public class GroupUserService {
         .stream()
         .map(groupUser -> {
           final User user = userRepository.findById(groupUser.userId());
+
+          if (groupUser.userDisplayName() == null) {
+            return GROUP_USER_MAPPER.mapToResponse(user, user.displayName());
+          }
           return GROUP_USER_MAPPER.mapToResponse(user, groupUser.userDisplayName());
         })
         .toList();
