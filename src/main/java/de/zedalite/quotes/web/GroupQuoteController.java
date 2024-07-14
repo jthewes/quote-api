@@ -67,7 +67,7 @@ public class GroupQuoteController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}/quotes")
   public ResponseEntity<List<QuoteResponse>> getAll(
     @PathVariable("id") final Integer id,
@@ -101,7 +101,7 @@ public class GroupQuoteController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}/quotes/{quoteId}")
   public ResponseEntity<QuoteResponse> get(
     @PathVariable("id") final Integer id,
@@ -132,7 +132,7 @@ public class GroupQuoteController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}/quotes/count")
   public ResponseEntity<CountResponse> getQuotesCount(@PathVariable("id") final Integer id) {
     return ResponseEntity.ok(service.count(id));
@@ -165,7 +165,7 @@ public class GroupQuoteController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @PostMapping("{id}/quotes")
   public ResponseEntity<QuoteResponse> createQuote(
     @PathVariable("id") final Integer id,

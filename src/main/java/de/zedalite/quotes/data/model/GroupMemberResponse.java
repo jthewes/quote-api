@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 
 @JsonSerialize
 @JsonDeserialize
-public record GroupUserResponse(
+public record GroupMemberResponse(
   @Schema(description = "User") @NotNull UserResponse user,
 
   @Schema(description = "Visual presentation of the username in group", example = "KING OF THE WORLD")

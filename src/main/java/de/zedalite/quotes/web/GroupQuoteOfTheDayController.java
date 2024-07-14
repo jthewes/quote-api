@@ -45,7 +45,7 @@ public class GroupQuoteOfTheDayController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}/qotd")
   public ResponseEntity<QuoteResponse> getQuoteOfTheDay(@PathVariable("id") final Integer id) {
     return ResponseEntity.ok(service.findQuoteOfTheDay(id));

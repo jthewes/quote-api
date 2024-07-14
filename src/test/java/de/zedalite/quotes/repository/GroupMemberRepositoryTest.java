@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.zedalite.quotes.TestEnvironmentProvider;
 import de.zedalite.quotes.data.model.Group;
+import de.zedalite.quotes.data.model.GroupMember;
+import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
-import de.zedalite.quotes.data.model.GroupUser;
-import de.zedalite.quotes.data.model.GroupUserRequest;
 import de.zedalite.quotes.data.model.UserRequest;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,10 +20,10 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(value = "classpath:test-no-cache.properties")
-class GroupUserRepositoryTest extends TestEnvironmentProvider {
+class GroupMemberRepositoryTest extends TestEnvironmentProvider {
 
   @Autowired
-  private GroupUserRepository instance;
+  private GroupMemberRepository instance;
 
   @Autowired
   private GroupRepository groupRepository;
@@ -40,39 +40,39 @@ class GroupUserRepositoryTest extends TestEnvironmentProvider {
   void setup() {
     userId = userRepository.save(new UserRequest("grouper", "test", "Grouper")).id();
     groupId = groupRepository.save(new GroupRequest("groupers-group", "Groupers"), userId).id();
-    final GroupUserRequest request = new GroupUserRequest(userId, "GROUPER");
+    final GroupMemberRequest request = new GroupMemberRequest(userId, "GROUPER");
     instance.save(groupId, request);
   }
 
   @Test
-  @DisplayName("Should save group user")
-  void shouldSaveGroupUser() {
+  @DisplayName("Should save group member")
+  void shouldSaveGroupMember() {
     final Integer newUserId = userRepository.save(new UserRequest("real operator", "op", "Real Operator")).id();
     final Integer newGroupId = groupRepository.save(new GroupRequest("random-group", "sfsfefs"), userId).id();
-    final GroupUserRequest request = new GroupUserRequest(newUserId, "REAL OPERATOR");
+    final GroupMemberRequest request = new GroupMemberRequest(newUserId, "REAL OPERATOR");
 
-    final GroupUser result = instance.save(newGroupId, request);
+    final GroupMember result = instance.save(newGroupId, request);
 
-    assertThat(result).isEqualTo(new GroupUser(newGroupId, newUserId, "REAL OPERATOR"));
+    assertThat(result).isEqualTo(new GroupMember(newGroupId, newUserId, "REAL OPERATOR"));
   }
 
   @Test
-  @DisplayName("Should find all group users")
-  void shouldFindAllGroupUsers() {
-    final List<GroupUser> groupUsers = instance.findUsers(groupId);
+  @DisplayName("Should find all group members")
+  void shouldFindAllGroupMembers() {
+    final List<GroupMember> groupMembers = instance.findUsers(groupId);
 
-    assertThat(groupUsers).hasSizeGreaterThanOrEqualTo(1);
+    assertThat(groupMembers).hasSizeGreaterThanOrEqualTo(1);
   }
 
   @Test
-  @DisplayName("Should find group user by id")
-  void shouldFindGroupUserById() {
-    final GroupUser groupUser = instance.findById(groupId, userId);
+  @DisplayName("Should find group member by id")
+  void shouldFindGroupMemberById() {
+    final GroupMember groupMember = instance.findById(groupId, userId);
 
-    assertThat(groupUser).isNotNull();
-    assertThat(groupUser.groupId()).isEqualTo(groupId);
-    assertThat(groupUser.userId()).isEqualTo(userId);
-    assertThat(groupUser.userDisplayName()).isEqualTo("GROUPER");
+    assertThat(groupMember).isNotNull();
+    assertThat(groupMember.groupId()).isEqualTo(groupId);
+    assertThat(groupMember.userId()).isEqualTo(userId);
+    assertThat(groupMember.displayName()).isEqualTo("GROUPER");
   }
 
   @Test
@@ -92,11 +92,11 @@ class GroupUserRepositoryTest extends TestEnvironmentProvider {
   }
 
   @Test
-  @DisplayName("Should delete group user")
-  void shouldDeleteGroupUser() {
+  @DisplayName("Should delete group member")
+  void shouldDeleteGroupMember() {
     final Integer newUserId = userRepository.save(new UserRequest("operator", "op", "Operator")).id();
     final Integer newGroupId = groupRepository.save(new GroupRequest("new-group", "NewGr"), userId).id();
-    final GroupUserRequest request = new GroupUserRequest(newUserId, "OPERATOR");
+    final GroupMemberRequest request = new GroupMemberRequest(newUserId, "OPERATOR");
     instance.save(newGroupId, request);
 
     final boolean isInGroup = instance.isUserInGroup(newGroupId, newUserId);

@@ -134,17 +134,17 @@ CREATE TABLE quotes.group_quotes (
 ALTER TABLE quotes.group_quotes OWNER TO "quote";
 
 --
--- Name: group_users; Type: TABLE; Schema: quotes; Owner: quote
+-- Name: group_members; Type: TABLE; Schema: quotes; Owner: quote
 --
 
-CREATE TABLE quotes.group_users (
+CREATE TABLE quotes.group_members (
                                     group_id integer NOT NULL,
                                     user_id integer NOT NULL,
-                                    user_display_name character varying(32)
+                                    display_name character varying(32)
 );
 
 
-ALTER TABLE quotes.group_users OWNER TO "quote";
+ALTER TABLE quotes.group_members OWNER TO "quote";
 
 --
 -- Name: groups; Type: TABLE; Schema: quotes; Owner: quote
@@ -271,11 +271,11 @@ ALTER TABLE ONLY quotes.group_quotes
 
 
 --
--- Name: group_users group_users_pkey; Type: CONSTRAINT; Schema: quotes; Owner: quote
+-- Name: group_members group_members_pkey; Type: CONSTRAINT; Schema: quotes; Owner: quote
 --
 
-ALTER TABLE ONLY quotes.group_users
-    ADD CONSTRAINT group_users_pkey PRIMARY KEY (group_id, user_id);
+ALTER TABLE ONLY quotes.group_members
+    ADD CONSTRAINT group_members_pkey PRIMARY KEY (group_id, user_id);
 
 
 --
@@ -342,19 +342,19 @@ ALTER TABLE ONLY quotes.group_quotes
 
 
 --
--- Name: group_users group_users_group_id_fkey; Type: FK CONSTRAINT; Schema: quotes; Owner: quote
+-- Name: group_members group_members_group_id_fkey; Type: FK CONSTRAINT; Schema: quotes; Owner: quote
 --
 
-ALTER TABLE ONLY quotes.group_users
-    ADD CONSTRAINT group_users_group_id_fkey FOREIGN KEY (group_id) REFERENCES quotes.groups(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+ALTER TABLE ONLY quotes.group_members
+    ADD CONSTRAINT group_members_group_id_fkey FOREIGN KEY (group_id) REFERENCES quotes.groups(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
 
 
 --
--- Name: group_users group_users_user_id_fkey; Type: FK CONSTRAINT; Schema: quotes; Owner: quote
+-- Name: group_members group_members_user_id_fkey; Type: FK CONSTRAINT; Schema: quotes; Owner: quote
 --
 
-ALTER TABLE ONLY quotes.group_users
-    ADD CONSTRAINT group_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users.users(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+ALTER TABLE ONLY quotes.group_members
+    ADD CONSTRAINT group_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES users.users(id) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
 
 
 --

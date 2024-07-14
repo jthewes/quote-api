@@ -1,16 +1,16 @@
 package de.zedalite.quotes.security;
 
 import de.zedalite.quotes.data.model.UserPrincipal;
-import de.zedalite.quotes.service.GroupUserService;
+import de.zedalite.quotes.service.GroupMemberService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Authorizer {
 
-  private final GroupUserService groupUserService;
+  private final GroupMemberService groupMemberService;
 
-  public Authorizer(final GroupUserService groupUserService) {
-    this.groupUserService = groupUserService;
+  public Authorizer(final GroupMemberService groupMemberService) {
+    this.groupMemberService = groupMemberService;
   }
 
   /**
@@ -20,7 +20,7 @@ public class Authorizer {
    * @param groupId   the ID of the group to check if the user is in
    * @return true if the user is in the group, false otherwise
    */
-  public boolean isUserInGroup(final UserPrincipal principal, final Integer groupId) {
-    return groupUserService.isUserInGroup(groupId, principal.getId());
+  public boolean isGroupMember(final UserPrincipal principal, final Integer groupId) {
+    return groupMemberService.isGroupMember(groupId, principal.getId());
   }
 }

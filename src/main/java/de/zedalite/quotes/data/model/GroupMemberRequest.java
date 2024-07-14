@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 @JsonSerialize
 @JsonDeserialize
-public record GroupUserRequest(
+public record GroupMemberRequest(
   @Schema(description = "User's unique identifier", example = "1") @NotNull Integer userId,
 
   @Schema(description = "Visual presentation of the username in group", example = "KING OF THE WORLD")

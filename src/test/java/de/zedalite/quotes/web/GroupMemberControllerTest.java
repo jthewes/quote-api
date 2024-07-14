@@ -6,13 +6,13 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 
-import de.zedalite.quotes.data.model.GroupUserRequest;
-import de.zedalite.quotes.data.model.GroupUserResponse;
+import de.zedalite.quotes.data.model.GroupMemberRequest;
+import de.zedalite.quotes.data.model.GroupMemberResponse;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.data.model.UserPrincipal;
-import de.zedalite.quotes.fixtures.GroupUserGenerator;
+import de.zedalite.quotes.fixtures.GroupMemberGenerator;
 import de.zedalite.quotes.fixtures.UserGenerator;
-import de.zedalite.quotes.service.GroupUserService;
+import de.zedalite.quotes.service.GroupMemberService;
 import java.util.List;
 import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
@@ -25,21 +25,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
-class GroupUserControllerTest {
+class GroupMemberControllerTest {
 
   @InjectMocks
-  private GroupUserController instance;
+  private GroupMemberController instance;
 
   @Mock
-  private GroupUserService service;
+  private GroupMemberService service;
 
   @Test
-  @DisplayName("Should get group users")
-  void shouldGetGroupUsers() {
+  @DisplayName("Should get group members")
+  void shouldGetGroupMembers() {
     final List<User> expectedUsers = UserGenerator.getUsers();
     willReturn(expectedUsers).given(service).findAll(anyInt());
 
-    final ResponseEntity<List<GroupUserResponse>> response = instance.getUsers(1);
+    final ResponseEntity<List<GroupMemberResponse>> response = instance.getUsers(1);
 
     then(service).should().findAll(1);
     assertThat(response).isNotNull();
@@ -47,32 +47,32 @@ class GroupUserControllerTest {
   }
 
   @Test
-  @DisplayName("Should get group user")
-  void shouldGetGroupUser() {
-    final GroupUserResponse expectedGroupUser = GroupUserGenerator.getGroupUserResponse();
-    willReturn(expectedGroupUser).given(service).find(anyInt(), anyInt());
+  @DisplayName("Should get group member")
+  void shouldGetGroupMember() {
+    final GroupMemberResponse expectedGroupMember = GroupMemberGenerator.getGroupMemberResponse();
+    willReturn(expectedGroupMember).given(service).find(anyInt(), anyInt());
 
-    final ResponseEntity<GroupUserResponse> response = instance.getUser(1, 1);
+    final ResponseEntity<GroupMemberResponse> response = instance.getUser(1, 1);
 
     then(service).should().find(1, 1);
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(expectedGroupUser);
+    assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(expectedGroupMember);
   }
 
   @Test
-  @DisplayName("Should post group user")
-  void shouldPostGroupUser() {
-    final GroupUserResponse groupUserResponse = GroupUserGenerator.getGroupUserResponse();
-    willReturn(groupUserResponse).given(service).create(anyInt(), any(GroupUserRequest.class));
-    final GroupUserRequest request = new GroupUserRequest(1, null);
+  @DisplayName("Should post group member")
+  void shouldPostGroupMember() {
+    final GroupMemberResponse groupMemberResponse = GroupMemberGenerator.getGroupMemberResponse();
+    willReturn(groupMemberResponse).given(service).create(anyInt(), any(GroupMemberRequest.class));
+    final GroupMemberRequest request = new GroupMemberRequest(1, null);
 
-    final ResponseEntity<GroupUserResponse> response = instance.createUser(1, request);
+    final ResponseEntity<GroupMemberResponse> response = instance.createUser(1, request);
 
     then(service).should().create(1, request);
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(groupUserResponse);
+    assertThat(response.getBody()).isEqualTo(groupMemberResponse);
   }
 
   @Test

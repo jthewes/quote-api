@@ -1,10 +1,10 @@
 package de.zedalite.quotes.web;
 
 import de.zedalite.quotes.data.model.ErrorResponse;
-import de.zedalite.quotes.data.model.GroupUserRequest;
-import de.zedalite.quotes.data.model.GroupUserResponse;
+import de.zedalite.quotes.data.model.GroupMemberRequest;
+import de.zedalite.quotes.data.model.GroupMemberResponse;
 import de.zedalite.quotes.data.model.UserPrincipal;
-import de.zedalite.quotes.service.GroupUserService;
+import de.zedalite.quotes.service.GroupMemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,26 +27,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "Groups", description = "Operations related to groups")
 @RequestMapping("groups")
-public class GroupUserController {
+public class GroupMemberController {
 
-  private final GroupUserService service;
+  private final GroupMemberService service;
 
-  public GroupUserController(final GroupUserService service) {
+  public GroupMemberController(final GroupMemberService service) {
     this.service = service;
   }
 
   @Operation(
-    summary = "Get all group users",
-    description = "Get all group users",
-    operationId = "getGroupUsers",
+    summary = "Get all group members",
+    description = "Get all group members",
+    operationId = "getGroupMembers",
     responses = {
       @ApiResponse(
         responseCode = "200",
-        description = "Group user found",
+        description = "Group member found",
         content = {
           @Content(
             mediaType = "application/json",
-            array = @ArraySchema(schema = @Schema(implementation = GroupUserResponse.class))
+            array = @ArraySchema(schema = @Schema(implementation = GroupMemberResponse.class))
           ),
         }
       ),
@@ -57,26 +57,26 @@ public class GroupUserController {
       ),
       @ApiResponse(
         responseCode = "404",
-        description = "Group user not found",
+        description = "Group member not found",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}/users")
-  public ResponseEntity<List<GroupUserResponse>> getUsers(@PathVariable("id") final Integer id) {
+  public ResponseEntity<List<GroupMemberResponse>> getUsers(@PathVariable("id") final Integer id) {
     return ResponseEntity.ok(service.findAll(id));
   }
 
   @Operation(
-    summary = "Get a group user by its id",
-    description = "Get a group user by its id",
-    operationId = "getGroupUser",
+    summary = "Get a group member by its id",
+    description = "Get a group member by its id",
+    operationId = "getGroupMember",
     responses = {
       @ApiResponse(
         responseCode = "200",
-        description = "Group user found",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupUserResponse.class))
+        description = "Group member found",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupMemberResponse.class))
       ),
       @ApiResponse(
         responseCode = "403",
@@ -85,14 +85,14 @@ public class GroupUserController {
       ),
       @ApiResponse(
         responseCode = "404",
-        description = "Group user not found",
+        description = "Group member not found",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}/users/{userId}")
-  public ResponseEntity<GroupUserResponse> getUser(
+  public ResponseEntity<GroupMemberResponse> getUser(
     @PathVariable("id") final Integer id,
     @PathVariable("userId") final Integer userId
   ) {
@@ -103,18 +103,18 @@ public class GroupUserController {
    * @deprecated Use invitation code instead
    */
   @Operation(
-    summary = "Create a new group user",
-    description = "Create a new group user",
-    operationId = "createGroupUser",
+    summary = "Create a new group member",
+    description = "Create a new group member",
+    operationId = "createGroupMember",
     responses = {
       @ApiResponse(
         responseCode = "200",
-        description = "Group user created",
+        description = "Group member created",
         content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "400",
-        description = "Group user not created",
+        description = "Group member not created",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
       ),
       @ApiResponse(
@@ -129,12 +129,12 @@ public class GroupUserController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @PostMapping("{id}/users")
   @Deprecated(since = "1.6.0", forRemoval = true)
-  public ResponseEntity<GroupUserResponse> createUser(
+  public ResponseEntity<GroupMemberResponse> createUser(
     @PathVariable("id") final Integer id,
-    @RequestBody @Valid final GroupUserRequest request
+    @RequestBody @Valid final GroupMemberRequest request
   ) {
     // TODO is this endpoint necessary? -> invitation code should be enough?
     return ResponseEntity.ok(service.create(id, request));
@@ -158,7 +158,7 @@ public class GroupUserController {
       ),
     }
   )
-  @PreAuthorize("@authorizer.isUserInGroup(principal,#id)")
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @DeleteMapping("{id}/users/me")
   public ResponseEntity<Void> leaveGroup(
     @PathVariable final Integer id,

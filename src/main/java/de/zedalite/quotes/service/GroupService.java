@@ -2,16 +2,16 @@ package de.zedalite.quotes.service;
 
 import de.zedalite.quotes.data.mapper.GroupMapper;
 import de.zedalite.quotes.data.model.Group;
+import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
-import de.zedalite.quotes.data.model.GroupUserRequest;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.ResourceAlreadyExitsException;
 import de.zedalite.quotes.exception.ResourceNotFoundException;
 import de.zedalite.quotes.exception.UserNotFoundException;
+import de.zedalite.quotes.repository.GroupMemberRepository;
 import de.zedalite.quotes.repository.GroupRepository;
-import de.zedalite.quotes.repository.GroupUserRepository;
 import de.zedalite.quotes.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
@@ -24,22 +24,22 @@ public class GroupService {
 
   private final GroupRepository repository;
   private final UserRepository userRepository;
-  private final GroupUserRepository groupUserRepository;
+  private final GroupMemberRepository groupMemberRepository;
 
   public GroupService(
     final GroupRepository repository,
     final UserRepository userRepository,
-    final GroupUserRepository groupUserRepository
+    final GroupMemberRepository groupMemberRepository
   ) {
     this.repository = repository;
     this.userRepository = userRepository;
-    this.groupUserRepository = groupUserRepository;
+    this.groupMemberRepository = groupMemberRepository;
   }
 
   public GroupResponse create(final GroupRequest request, final Integer creatorId) {
     try {
       final Group group = repository.save(request, creatorId);
-      groupUserRepository.save(group.id(), new GroupUserRequest(creatorId, null));
+      groupMemberRepository.save(group.id(), new GroupMemberRequest(creatorId, null));
       return getResponse(group, getUser(group.creatorId()));
     } catch (final GroupNotFoundException | UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
@@ -57,7 +57,7 @@ public class GroupService {
 
   public List<GroupResponse> findAllByUser(final Integer userId) {
     try {
-      final List<Group> groups = groupUserRepository.findGroups(userId);
+      final List<Group> groups = groupMemberRepository.findGroups(userId);
       return getResponses(groups);
     } catch (final GroupNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
@@ -90,10 +90,10 @@ public class GroupService {
     try {
       final Group group = repository.findByCode(code);
 
-      if (groupUserRepository.isUserInGroup(group.id(), userId)) {
+      if (groupMemberRepository.isUserInGroup(group.id(), userId)) {
         throw new ResourceAlreadyExitsException("User is already a group member");
       }
-      groupUserRepository.save(group.id(), new GroupUserRequest(userId, null));
+      groupMemberRepository.save(group.id(), new GroupMemberRequest(userId, null));
       return getResponse(group, getUser(group.creatorId()));
     } catch (final GroupNotFoundException | UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
