@@ -50,7 +50,7 @@ class GroupMemberServiceTest {
   @DisplayName("Should create group member")
   void shouldCreateGroupMember() {
     willReturn(false).given(userRepository).doesUserNonExist(2);
-    willReturn(false).given(repository).isUserInGroup(1, 2);
+    willReturn(false).given(repository).isMember(1, 2);
     final GroupMember groupMember = GroupMemberGenerator.getGroupMember();
     willReturn(groupMember).given(repository).save(anyInt(), any(GroupMemberRequest.class));
 
@@ -74,7 +74,7 @@ class GroupMemberServiceTest {
   @DisplayName("Should not create group member when user already in group")
   void shouldNotCreateGroupMemberWhenUserAlreadyInGroup() {
     willReturn(false).given(userRepository).doesUserNonExist(2);
-    willReturn(true).given(repository).isUserInGroup(1, 2);
+    willReturn(true).given(repository).isMember(1, 2);
 
     final GroupMemberRequest request = new GroupMemberRequest(2, null);
 
@@ -86,7 +86,7 @@ class GroupMemberServiceTest {
   @DisplayName("Should not create group member when saving failed")
   void shouldNotCreateGroupMemberWhenSavingFailed() {
     willReturn(false).given(userRepository).doesUserNonExist(2);
-    willReturn(false).given(repository).isUserInGroup(1, 2);
+    willReturn(false).given(repository).isMember(1, 2);
     final GroupMemberRequest request = new GroupMemberRequest(2, null);
     willThrow(UserNotFoundException.class).given(repository).save(1, request);
 
@@ -132,17 +132,17 @@ class GroupMemberServiceTest {
   @Test
   @DisplayName("Should find group members")
   void shouldFindGroupMembers() {
-    final List<GroupMember> expectedUsers = GroupMemberGenerator.getGroupMembers();
+    final List<GroupMember> expectedMembers = GroupMemberGenerator.getGroupMembers();
     final User expectedUser = UserGenerator.getUser();
-    willReturn(expectedUsers).given(repository).findUsers(1);
+    willReturn(expectedMembers).given(repository).findMembers(1);
     willReturn(expectedUser).given(userRepository).findById(anyInt());
 
     final List<GroupMemberResponse> result = instance.findAll(1);
 
-    then(repository).should().findUsers(1);
+    then(repository).should().findMembers(1);
     assertThat(result).hasSizeGreaterThanOrEqualTo(2);
     assertThat(result.getFirst()).isNotNull();
-    assertThat(result.getFirst().displayName()).isEqualTo(expectedUsers.getFirst().displayName());
+    assertThat(result.getFirst().displayName()).isEqualTo(expectedMembers.getFirst().displayName());
     assertThat(result.get(1)).isNotNull();
     assertThat(result.get(1).displayName()).isEqualTo("TESTER");
   }
@@ -150,7 +150,7 @@ class GroupMemberServiceTest {
   @Test
   @DisplayName("Should not find group members when user non exist")
   void shouldNotFindGroupMembersWhenUserNonExist() {
-    willThrow(UserNotFoundException.class).given(repository).findUsers(1);
+    willThrow(UserNotFoundException.class).given(repository).findMembers(1);
 
     assertThatCode(() -> instance.findAll(1)).isInstanceOf(ResourceNotFoundException.class);
   }
@@ -159,7 +159,7 @@ class GroupMemberServiceTest {
   @ValueSource(booleans = { true, false })
   @DisplayName("Should determine if user is in group")
   void shouldDetermineIfUserIsInGroup(final Boolean isInGroup) {
-    willReturn(isInGroup).given(repository).isUserInGroup(1, 2);
+    willReturn(isInGroup).given(repository).isMember(1, 2);
 
     final boolean result = instance.isGroupMember(1, 2);
 
@@ -172,7 +172,7 @@ class GroupMemberServiceTest {
     final Group expectedGroup = GroupGenerator.getGroup();
     final Integer userId = 1;
 
-    willReturn(true).given(repository).isUserInGroup(anyInt(), anyInt());
+    willReturn(true).given(repository).isMember(anyInt(), anyInt());
 
     instance.leave(expectedGroup.id(), userId);
 
@@ -185,7 +185,7 @@ class GroupMemberServiceTest {
     final Integer expectedGroupId = GroupGenerator.getGroup().id();
     final Integer userId = 1;
 
-    willReturn(false).given(repository).isUserInGroup(anyInt(), anyInt());
+    willReturn(false).given(repository).isMember(anyInt(), anyInt());
 
     assertThatExceptionOfType(ResourceNotFoundException.class)
       .isThrownBy(() -> instance.leave(expectedGroupId, userId))
@@ -197,7 +197,7 @@ class GroupMemberServiceTest {
   void shouldThrowExceptionWhenLeavingGroupIsNotFound() {
     final Integer userId = 1;
 
-    willThrow(new GroupNotFoundException("Group not found")).given(repository).isUserInGroup(anyInt(), anyInt());
+    willThrow(new GroupNotFoundException("Group not found")).given(repository).isMember(anyInt(), anyInt());
 
     assertThatExceptionOfType(ResourceNotFoundException.class)
       .isThrownBy(() -> instance.leave(1, userId))

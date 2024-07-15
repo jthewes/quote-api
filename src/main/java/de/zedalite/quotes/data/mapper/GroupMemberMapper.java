@@ -15,7 +15,7 @@ public interface GroupMemberMapper {
 
   GroupMember mapToGroupMember(final GroupMembersRecord groupMembersRecord);
 
-  List<GroupMember> mapToGroupMembers(List<GroupMembersRecord> users);
+  List<GroupMember> mapToGroupMembers(List<GroupMembersRecord> groupMembersRecords);
 
   @Mapping(target = "user", source = "user")
   @Mapping(target = "displayName", source = "memberDisplayName")

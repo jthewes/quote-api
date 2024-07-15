@@ -63,8 +63,8 @@ public class GroupMemberController {
     }
   )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
-  @GetMapping("{id}/users")
-  public ResponseEntity<List<GroupMemberResponse>> getUsers(@PathVariable("id") final Integer id) {
+  @GetMapping("{id}/members")
+  public ResponseEntity<List<GroupMemberResponse>> getMembers(@PathVariable("id") final Integer id) {
     return ResponseEntity.ok(service.findAll(id));
   }
 
@@ -91,7 +91,7 @@ public class GroupMemberController {
     }
   )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
-  @GetMapping("{id}/users/{userId}")
+  @GetMapping("{id}/members/{userId}")
   public ResponseEntity<GroupMemberResponse> getUser(
     @PathVariable("id") final Integer id,
     @PathVariable("userId") final Integer userId
@@ -130,9 +130,9 @@ public class GroupMemberController {
     }
   )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
-  @PostMapping("{id}/users")
+  @PostMapping("{id}/members")
   @Deprecated(since = "1.6.0", forRemoval = true)
-  public ResponseEntity<GroupMemberResponse> createUser(
+  public ResponseEntity<GroupMemberResponse> createMember(
     @PathVariable("id") final Integer id,
     @RequestBody @Valid final GroupMemberRequest request
   ) {
@@ -159,7 +159,7 @@ public class GroupMemberController {
     }
   )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
-  @DeleteMapping("{id}/users/me")
+  @DeleteMapping("{id}/members/me")
   public ResponseEntity<Void> leaveGroup(
     @PathVariable final Integer id,
     @AuthenticationPrincipal final UserPrincipal principal

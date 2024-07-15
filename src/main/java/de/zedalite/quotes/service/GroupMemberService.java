@@ -35,7 +35,7 @@ public class GroupMemberService {
 
     // TODO add push notifcation: send to specific group topic or user notification token
     try {
-      if (repository.isUserInGroup(id, request.userId())) {
+      if (repository.isMember(id, request.userId())) {
         throw new ResourceAlreadyExitsException(GROUP_USER_ALREADY_EXITS);
       } else {
         final GroupMember groupMember = repository.save(id, request);
@@ -63,7 +63,7 @@ public class GroupMemberService {
   public List<GroupMemberResponse> findAll(final Integer id) {
     try {
       return repository
-        .findUsers(id)
+        .findMembers(id)
         .stream()
         .map(member -> {
           final User user = userRepository.findById(member.userId());
@@ -81,7 +81,7 @@ public class GroupMemberService {
 
   public void leave(final Integer id, final Integer userId) {
     try {
-      if (!repository.isUserInGroup(id, userId)) {
+      if (!repository.isMember(id, userId)) {
         throw new ResourceNotFoundException("User is not a group member");
       }
 
@@ -92,6 +92,6 @@ public class GroupMemberService {
   }
 
   public boolean isGroupMember(final Integer id, final Integer userId) {
-    return repository.isUserInGroup(id, userId);
+    return repository.isMember(id, userId);
   }
 }

@@ -39,7 +39,7 @@ class GroupMemberControllerTest {
     final List<User> expectedUsers = UserGenerator.getUsers();
     willReturn(expectedUsers).given(service).findAll(anyInt());
 
-    final ResponseEntity<List<GroupMemberResponse>> response = instance.getUsers(1);
+    final ResponseEntity<List<GroupMemberResponse>> response = instance.getMembers(1);
 
     then(service).should().findAll(1);
     assertThat(response).isNotNull();
@@ -67,7 +67,7 @@ class GroupMemberControllerTest {
     willReturn(groupMemberResponse).given(service).create(anyInt(), any(GroupMemberRequest.class));
     final GroupMemberRequest request = new GroupMemberRequest(1, null);
 
-    final ResponseEntity<GroupMemberResponse> response = instance.createUser(1, request);
+    final ResponseEntity<GroupMemberResponse> response = instance.createMember(1, request);
 
     then(service).should().create(1, request);
     assertThat(response).isNotNull();

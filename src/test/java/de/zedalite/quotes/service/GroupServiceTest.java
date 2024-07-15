@@ -183,7 +183,7 @@ class GroupServiceTest {
     final Integer userId = 1;
 
     willReturn(expectedGroup).given(groupRepository).findByCode(anyString());
-    willReturn(false).given(groupMemberRepository).isUserInGroup(anyInt(), anyInt());
+    willReturn(false).given(groupMemberRepository).isMember(anyInt(), anyInt());
     willReturn(expectedUser).given(userRepository).findById(anyInt());
 
     final GroupResponse result = instance.join(code, userId);
@@ -201,7 +201,7 @@ class GroupServiceTest {
     final Integer userId = 1;
 
     willReturn(expectedGroup).given(groupRepository).findByCode(anyString());
-    willReturn(true).given(groupMemberRepository).isUserInGroup(anyInt(), anyInt());
+    willReturn(true).given(groupMemberRepository).isMember(anyInt(), anyInt());
 
     assertThatExceptionOfType(ResourceAlreadyExitsException.class)
       .isThrownBy(() -> instance.join(code, userId))

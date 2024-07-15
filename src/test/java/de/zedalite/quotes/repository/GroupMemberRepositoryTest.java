@@ -59,7 +59,7 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should find all group members")
   void shouldFindAllGroupMembers() {
-    final List<GroupMember> groupMembers = instance.findUsers(groupId);
+    final List<GroupMember> groupMembers = instance.findMembers(groupId);
 
     assertThat(groupMembers).hasSizeGreaterThanOrEqualTo(1);
   }
@@ -86,7 +86,7 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should return true when user is in group")
   void shouldReturnTrueWhenUserIsInGroup() {
-    final boolean isInGroup = instance.isUserInGroup(groupId, userId);
+    final boolean isInGroup = instance.isMember(groupId, userId);
 
     assertThat(isInGroup).isTrue();
   }
@@ -99,19 +99,19 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
     final GroupMemberRequest request = new GroupMemberRequest(newUserId, "OPERATOR");
     instance.save(newGroupId, request);
 
-    final boolean isInGroup = instance.isUserInGroup(newGroupId, newUserId);
+    final boolean isInGroup = instance.isMember(newGroupId, newUserId);
     assertThat(isInGroup).isTrue();
 
     instance.delete(newGroupId, newUserId);
 
-    final boolean isInGroupAfterDelete = instance.isUserInGroup(newGroupId, newUserId);
+    final boolean isInGroupAfterDelete = instance.isMember(newGroupId, newUserId);
     assertThat(isInGroupAfterDelete).isFalse();
   }
 
   @Test
   @DisplayName("Should return false when user is not in group")
   void shouldReturnFalseWhenUserIsNotInGroup() {
-    final boolean isInGroup = instance.isUserInGroup(9876, 345);
+    final boolean isInGroup = instance.isMember(9876, 345);
 
     assertThat(isInGroup).isFalse();
   }
