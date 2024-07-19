@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GroupMemberRepository {
 
-  private static final GroupMemberMapper GROUP_USER_MAPPER = GroupMemberMapper.INSTANCE;
+  private static final GroupMemberMapper GROUP_MEMBER_MAPPER = GroupMemberMapper.INSTANCE;
   private static final Groups GROUPS = Groups.GROUPS.as("groups");
   private static final GroupMembers GROUP_MEMBER = GroupMembers.GROUP_MEMBERS.as("group_members");
   private static final String GROUP_MEMBER_NOT_FOUND = "Group member not found";
@@ -40,7 +40,7 @@ public class GroupMemberRepository {
 
     if (savedGroupMember.isEmpty()) throw new UserNotFoundException(GROUP_MEMBER_NOT_FOUND);
 
-    return GROUP_USER_MAPPER.mapToGroupMember(savedGroupMember.get());
+    return GROUP_MEMBER_MAPPER.mapToGroupMember(savedGroupMember.get());
   }
 
   @Cacheable(value = "group_users", key = "{#id,#userId}", unless = "#result = null")
@@ -52,7 +52,7 @@ public class GroupMemberRepository {
 
     if (user.isEmpty()) throw new UserNotFoundException(GROUP_MEMBER_NOT_FOUND);
 
-    return GROUP_USER_MAPPER.mapToGroupMember(user.get());
+    return GROUP_MEMBER_MAPPER.mapToGroupMember(user.get());
   }
 
   public List<GroupMember> findMembers(final Integer groupId) {
@@ -61,7 +61,7 @@ public class GroupMemberRepository {
       .where(GROUP_MEMBER.GROUP_ID.eq(groupId))
       .fetchInto(GroupMembersRecord.class);
     if (members.isEmpty()) throw new UserNotFoundException(GROUP_MEMBER_NOT_FOUND);
-    return GROUP_USER_MAPPER.mapToGroupMembers(members);
+    return GROUP_MEMBER_MAPPER.mapToGroupMembers(members);
   }
 
   public List<Group> findGroups(final Integer userId) {

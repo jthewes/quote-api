@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class GroupMemberService {
 
-  private static final GroupMemberMapper GROUP_USER_MAPPER = GroupMemberMapper.INSTANCE;
+  private static final GroupMemberMapper GROUP_MEMBER_MAPPER = GroupMemberMapper.INSTANCE;
 
-  private static final String GROUP_USER_ALREADY_EXITS = "Group member already exits";
+  private static final String GROUP_MEMBER_ALREADY_EXITS = "Group member already exits";
 
   private final GroupMemberRepository repository;
 
@@ -36,11 +36,11 @@ public class GroupMemberService {
     // TODO add push notifcation: send to specific group topic or user notification token
     try {
       if (repository.isMember(id, request.userId())) {
-        throw new ResourceAlreadyExitsException(GROUP_USER_ALREADY_EXITS);
+        throw new ResourceAlreadyExitsException(GROUP_MEMBER_ALREADY_EXITS);
       } else {
         final GroupMember groupMember = repository.save(id, request);
         final User user = userRepository.findById(groupMember.userId());
-        return GROUP_USER_MAPPER.mapToResponse(user, groupMember.displayName());
+        return GROUP_MEMBER_MAPPER.mapToResponse(user, groupMember.displayName());
       }
     } catch (final UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
@@ -52,9 +52,9 @@ public class GroupMemberService {
       final GroupMember groupMember = repository.findById(id, userId);
       final User user = userRepository.findById(groupMember.userId());
       if (groupMember.displayName() == null) {
-        return GROUP_USER_MAPPER.mapToResponse(user, user.displayName());
+        return GROUP_MEMBER_MAPPER.mapToResponse(user, user.displayName());
       }
-      return GROUP_USER_MAPPER.mapToResponse(user, groupMember.displayName());
+      return GROUP_MEMBER_MAPPER.mapToResponse(user, groupMember.displayName());
     } catch (final UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
     }
@@ -69,9 +69,9 @@ public class GroupMemberService {
           final User user = userRepository.findById(member.userId());
 
           if (member.displayName() == null) {
-            return GROUP_USER_MAPPER.mapToResponse(user, user.displayName());
+            return GROUP_MEMBER_MAPPER.mapToResponse(user, user.displayName());
           }
-          return GROUP_USER_MAPPER.mapToResponse(user, member.displayName());
+          return GROUP_MEMBER_MAPPER.mapToResponse(user, member.displayName());
         })
         .toList();
     } catch (final UserNotFoundException ex) {
