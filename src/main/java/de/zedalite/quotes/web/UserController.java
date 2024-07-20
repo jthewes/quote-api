@@ -173,5 +173,6 @@ public class UserController {
   ) {
     service.updateEmail(principal.getId(), request);
     return ResponseEntity.ok().build();
+    // TODO combine patch methode into one -> PATCH /users/me with request body containing all fields
   }
 }

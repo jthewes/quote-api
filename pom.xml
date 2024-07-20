@@ -32,7 +32,7 @@
     <mapstruct.version>1.6.0.Beta2</mapstruct.version>
     <springdoc-openapi-webmvc-ui.version>2.6.0</springdoc-openapi-webmvc-ui.version>
     <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
-    <owasp-plugin.version>10.0.2</owasp-plugin.version>
+    <owasp-plugin.version>10.0.3</owasp-plugin.version>
     <pitest.version>1.16.1</pitest.version>
     <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
     <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>

@@ -167,6 +167,33 @@ public class GroupController {
     return ResponseEntity.ok(service.join(code, principal.getId()));
   }
 
+  @Operation(
+    summary = "Update group's display name",
+    description = "Update group's display name",
+    operationId = "updateDisplayName",
+    responses = {
+      @ApiResponse(
+        responseCode = "200",
+        description = "Group's display name updated",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Request not valid",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "403",
+        description = "Group modification not allowed",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "404",
+        description = "Group not found",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+      ),
+    }
+  )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @PatchMapping("{id}/displayname")
   public ResponseEntity<GroupResponse> updateDisplayName(
