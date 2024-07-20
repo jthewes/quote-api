@@ -8,6 +8,7 @@ import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.UserRequest;
 import de.zedalite.quotes.exception.GroupNotFoundException;
+import de.zedalite.quotes.fixtures.GroupGenerator;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -111,5 +112,26 @@ class GroupRepositoryTest extends TestEnvironmentProvider {
   @DisplayName("Should throw exception finding group by non-existing code")
   void shouldThrowExceptionFindingGroupByNonExistingCode() {
     assertThatCode(() -> instance.findByCode("NONEXISTING")).isInstanceOf(GroupNotFoundException.class);
+  }
+
+  @Test
+  @DisplayName("Should update group")
+  void shouldUpdateGroup() {
+    final Integer groupId = instance.save(new GroupRequest("displayName", "joinMe"), 1).id();
+    final GroupRequest groupRequest = new GroupRequest("LALALLA", "LALALLA");
+
+    final Group updatedGroup = instance.update(groupId, groupRequest);
+
+    assertThat(updatedGroup).isNotNull();
+    assertThat(updatedGroup.id()).isEqualTo(groupId);
+    assertThat(updatedGroup.inviteCode()).isEqualTo("LALALLA");
+    assertThat(updatedGroup.displayName()).isEqualTo("LALALLA");
+  }
+
+  @Test
+  @DisplayName("Should throw exception updating non-existing group")
+  void shouldThrowExceptionUpdatingNonExistingGroup() {
+    final GroupRequest request = GroupGenerator.getGroupRequest();
+    assertThatCode(() -> instance.update(999, request)).isInstanceOf(GroupNotFoundException.class);
   }
 }

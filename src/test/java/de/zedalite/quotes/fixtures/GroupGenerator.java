@@ -10,15 +10,15 @@ import java.util.Optional;
 public class GroupGenerator {
 
   public static GroupRequest getGroupRequest() {
-    return new GroupRequest("test-group", "TestGroup");
+    return new GroupRequest("test-group", "TestGrou");
   }
 
   public static Group getGroup() {
-    return new Group(1, "test-group", "TestGroup", LocalDateTime.now(), Optional.of(1));
+    return new Group(1, "TestGrou", "test-group", LocalDateTime.now(), Optional.of(1));
   }
 
   public static Group getGroupNoCreator() {
-    return new Group(1, "test-group", "TestGroup", LocalDateTime.now(), Optional.empty());
+    return new Group(1, "TestGrou", "test-group", LocalDateTime.now(), Optional.empty());
   }
 
   public static GroupResponse getGroupResponse() {
@@ -28,7 +28,7 @@ public class GroupGenerator {
   public static List<Group> getGroups() {
     return List.of(
       new Group(1, "space", "Space", LocalDateTime.now(), Optional.of(1)),
-      new Group(2, "outerspace", "Outer Space", LocalDateTime.now(), Optional.of(1))
+      new Group(2, "outerspa", "Outer Space", LocalDateTime.now(), Optional.of(1))
     );
   }
 }

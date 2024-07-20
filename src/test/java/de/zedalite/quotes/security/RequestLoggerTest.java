@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,14 +41,5 @@ class RequestLoggerTest extends TestEnvironmentProvider {
       "user",
       "duration"
     );
-  }
-
-  @Test
-  @WithAnonymousUser
-  @DisplayName("Should log auth fail")
-  void shouldLogAuthFail(final CapturedOutput output) throws Exception {
-    mockMvc.perform(get("/quotes/count")).andExpect(status().isForbidden());
-
-    assertThat(output).contains("auth", "FAIL", "/quotes/count", "client", "user");
   }
 }

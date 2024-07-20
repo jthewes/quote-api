@@ -1,6 +1,7 @@
 package de.zedalite.quotes.web;
 
 import de.zedalite.quotes.data.model.ErrorResponse;
+import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
 import de.zedalite.quotes.data.model.UserPrincipal;
@@ -15,9 +16,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -162,5 +165,13 @@ public class GroupController {
     @AuthenticationPrincipal final UserPrincipal principal
   ) {
     return ResponseEntity.ok(service.join(code, principal.getId()));
+  }
+
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
+  @PatchMapping("{id}/displayname")
+  public ResponseEntity<GroupResponse> updateDisplayName(
+    @PathVariable("id") final Integer id,
+    @RequestBody @Valid final GroupDisplayNameRequest displayName) {
+    return ResponseEntity.ok(service.updateDisplayName(id, displayName));
   }
 }

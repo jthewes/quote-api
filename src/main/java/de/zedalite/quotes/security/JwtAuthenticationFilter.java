@@ -61,9 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
         return;
       }
-    } else {
-      final String authMessage = REQUEST_MAPPER.map(request, "FAIL", "anon").toString();
-      LOGGER.info(authMessage);
     }
     filterChain.doFilter(request, response);
   }

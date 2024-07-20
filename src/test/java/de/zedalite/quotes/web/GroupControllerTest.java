@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 
+import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
 import de.zedalite.quotes.data.model.UserPrincipal;
@@ -85,6 +86,19 @@ class GroupControllerTest {
     final ResponseEntity<GroupResponse> response = instance.joinGroup("code", principal);
 
     then(service).should().join("code", principal.getId());
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  }
+
+  @Test
+  @DisplayName("Should update group display name ")
+  void shouldUpdateGroupDisplayName() {
+    final GroupResponse expectedGroup = GroupGenerator.getGroupResponse();
+    willReturn(expectedGroup).given(service).updateDisplayName(anyInt(), any(GroupDisplayNameRequest.class));
+
+    final ResponseEntity<GroupResponse> response = instance.updateDisplayName(1, new GroupDisplayNameRequest("Awesome name"));
+
+    then(service).should().updateDisplayName(1, new GroupDisplayNameRequest("Awesome name"));
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

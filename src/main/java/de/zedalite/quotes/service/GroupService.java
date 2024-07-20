@@ -2,6 +2,7 @@ package de.zedalite.quotes.service;
 
 import de.zedalite.quotes.data.mapper.GroupMapper;
 import de.zedalite.quotes.data.model.Group;
+import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
@@ -99,6 +100,25 @@ public class GroupService {
       throw new ResourceNotFoundException(ex.getMessage());
     }
   }
+
+  public Group update(final Integer id, final GroupRequest request) {
+    try {
+      return repository.update(id, request);
+    } catch (final GroupNotFoundException ex) {
+      throw new ResourceNotFoundException(ex.getMessage());
+    }
+  }
+
+  public GroupResponse updateDisplayName(final Integer id, final GroupDisplayNameRequest request) {
+    try {
+      final Group group = repository.findById(id);
+      final Group updatedGroup = update(1, new GroupRequest(request.displayName(), group.inviteCode()));
+      return getResponse(updatedGroup, getUser(group.creatorId()));
+    } catch (final GroupNotFoundException ex) {
+      throw new ResourceNotFoundException(ex.getMessage());
+    }
+  }
+
 
   private GroupResponse getResponse(final Group group, final Optional<User> creator) {
     return GROUP_MAPPER.mapToResponse(group, creator.orElse(null));

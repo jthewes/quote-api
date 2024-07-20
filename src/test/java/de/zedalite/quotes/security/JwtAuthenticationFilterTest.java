@@ -78,7 +78,6 @@ class JwtAuthenticationFilterTest {
   @DisplayName("Should block no token or wrong header")
   void shouldBlockNoToken(final String headerValue) throws Exception {
     given(request.getHeader(AUTHORIZATION)).willReturn(headerValue);
-    given(request.getRemoteAddr()).willReturn("127.0.0.1");
 
     instance.doFilterInternal(request, response, filterChain);
 

@@ -1,5 +1,6 @@
 package de.zedalite.quotes.utils;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,6 +10,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 class NumberUtilsTest {
+
+  @Test
+  @DisplayName("Should throw when constructor called")
+  void shouldThrowWhenConstructorCalled() {
+    assertThatCode(NumberUtils::new).isInstanceOf(IllegalStateException.class);
+  }
 
   @Test
   @DisplayName("Test with valid integer string")

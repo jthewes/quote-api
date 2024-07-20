@@ -77,4 +77,16 @@ public class GroupRepository {
     if (group.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
     return GROUP_MAPPER.mapToGroup(group.get());
   }
+
+  public Group update(final Integer id, final GroupRequest request) {
+    final Optional<GroupsRecord> updatedGroup = dsl
+      .update(GROUPS)
+      .set(GROUPS.INVITE_CODE, request.inviteCode())
+      .set(GROUPS.DISPLAY_NAME, request.displayName())
+      .where(GROUPS.ID.eq(id))
+      .returning()
+      .fetchOptionalInto(GroupsRecord.class);
+    if (updatedGroup.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
+    return GROUP_MAPPER.mapToGroup(updatedGroup.get());
+  }
 }

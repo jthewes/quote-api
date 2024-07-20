@@ -30,11 +30,4 @@ public record Quote(
 
   @Schema(description = "Creator's unique identifier", example = "5") @PositiveOrZero Optional<Integer> creatorId
 ) {
-  public String truncateText() {
-    return truncateText(128);
-  }
-
-  public String truncateText(final Integer maxLength) {
-    return this.text().substring(0, Math.min(this.text().length(), maxLength));
-  }
 }
