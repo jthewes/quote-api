@@ -12,9 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @EnableMethodSecurity
 @EnableCaching
 @EnableScheduling
-public class QuotesApiApplication {
+public class QuoteServiceApplication {
 
   public static void main(final String[] args) {
-    SpringApplication.run(QuotesApiApplication.class, args);
+    SpringApplication.run(QuoteServiceApplication.class, args);
   }
 }
