@@ -1,12 +1,10 @@
 package de.zedalite.quotes.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 
-import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupMemberResponse;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.data.model.UserPrincipal;
@@ -58,21 +56,6 @@ class GroupMemberControllerTest {
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(expectedGroupMember);
-  }
-
-  @Test
-  @DisplayName("Should post group member")
-  void shouldPostGroupMember() {
-    final GroupMemberResponse groupMemberResponse = GroupMemberGenerator.getGroupMemberResponse();
-    willReturn(groupMemberResponse).given(service).create(anyInt(), any(GroupMemberRequest.class));
-    final GroupMemberRequest request = new GroupMemberRequest(1, null);
-
-    final ResponseEntity<GroupMemberResponse> response = instance.createMember(1, request);
-
-    then(service).should().create(1, request);
-    assertThat(response).isNotNull();
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo(groupMemberResponse);
   }
 
   @Test

@@ -5,13 +5,13 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.1</version>
+    <version>3.3.2</version>
     <relativePath/>
   </parent>
 
   <groupId>de.zedalite</groupId>
   <artifactId>quote-service</artifactId>
-  <version>1.9.0-SNAPSHOT</version>
+  <version>1.10.0-SNAPSHOT</version>
   <name>quote-service</name>
   <description>Quote Service - A RESTful API acting as a link between the frontend and the datasource.</description>
   <packaging>jar</packaging>

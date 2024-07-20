@@ -3,20 +3,16 @@ package de.zedalite.quotes.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.anyInt;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.never;
 
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupMember;
-import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupMemberResponse;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
-import de.zedalite.quotes.exception.ResourceAlreadyExitsException;
 import de.zedalite.quotes.exception.ResourceNotFoundException;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import de.zedalite.quotes.fixtures.GroupGenerator;
@@ -45,53 +41,6 @@ class GroupMemberServiceTest {
 
   @Mock
   private UserRepository userRepository;
-
-  @Test
-  @DisplayName("Should create group member")
-  void shouldCreateGroupMember() {
-    willReturn(false).given(userRepository).doesUserNonExist(2);
-    willReturn(false).given(repository).isMember(1, 2);
-    final GroupMember groupMember = GroupMemberGenerator.getGroupMember();
-    willReturn(groupMember).given(repository).save(anyInt(), any(GroupMemberRequest.class));
-
-    final GroupMemberResponse result = instance.create(1, new GroupMemberRequest(2, null));
-
-    then(repository).should().save(1, new GroupMemberRequest(2, null));
-    assertThat(result).isNotNull();
-  }
-
-  @Test
-  @DisplayName("Should not create group member when user non exist")
-  void shouldNotCreateGroupMemberWhenUserNonExist() {
-    willReturn(true).given(userRepository).doesUserNonExist(2);
-
-    final GroupMemberRequest request = new GroupMemberRequest(2, null);
-    assertThatCode(() -> instance.create(1, request)).isInstanceOf(ResourceNotFoundException.class);
-    then(repository).shouldHaveNoInteractions();
-  }
-
-  @Test
-  @DisplayName("Should not create group member when user already in group")
-  void shouldNotCreateGroupMemberWhenUserAlreadyInGroup() {
-    willReturn(false).given(userRepository).doesUserNonExist(2);
-    willReturn(true).given(repository).isMember(1, 2);
-
-    final GroupMemberRequest request = new GroupMemberRequest(2, null);
-
-    assertThatCode(() -> instance.create(1, request)).isInstanceOf(ResourceAlreadyExitsException.class);
-    then(repository).should(never()).save(1, request);
-  }
-
-  @Test
-  @DisplayName("Should not create group member when saving failed")
-  void shouldNotCreateGroupMemberWhenSavingFailed() {
-    willReturn(false).given(userRepository).doesUserNonExist(2);
-    willReturn(false).given(repository).isMember(1, 2);
-    final GroupMemberRequest request = new GroupMemberRequest(2, null);
-    willThrow(UserNotFoundException.class).given(repository).save(1, request);
-
-    assertThatCode(() -> instance.create(1, request)).isInstanceOf(ResourceNotFoundException.class);
-  }
 
   @Test
   @DisplayName("Should find group member")

@@ -2,11 +2,9 @@ package de.zedalite.quotes.service;
 
 import de.zedalite.quotes.data.mapper.GroupMemberMapper;
 import de.zedalite.quotes.data.model.GroupMember;
-import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupMemberResponse;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
-import de.zedalite.quotes.exception.ResourceAlreadyExitsException;
 import de.zedalite.quotes.exception.ResourceNotFoundException;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import de.zedalite.quotes.repository.GroupMemberRepository;
@@ -19,8 +17,6 @@ public class GroupMemberService {
 
   private static final GroupMemberMapper GROUP_MEMBER_MAPPER = GroupMemberMapper.INSTANCE;
 
-  private static final String GROUP_MEMBER_ALREADY_EXITS = "Group member already exits";
-
   private final GroupMemberRepository repository;
 
   private final UserRepository userRepository;
@@ -28,23 +24,6 @@ public class GroupMemberService {
   public GroupMemberService(final GroupMemberRepository repository, final UserRepository userRepository) {
     this.repository = repository;
     this.userRepository = userRepository;
-  }
-
-  public GroupMemberResponse create(final Integer id, final GroupMemberRequest request) {
-    if (userRepository.doesUserNonExist(request.userId())) throw new ResourceNotFoundException("USER_NOT_FOUND");
-
-    // TODO add push notifcation: send to specific group topic or user notification token
-    try {
-      if (repository.isMember(id, request.userId())) {
-        throw new ResourceAlreadyExitsException(GROUP_MEMBER_ALREADY_EXITS);
-      } else {
-        final GroupMember groupMember = repository.save(id, request);
-        final User user = userRepository.findById(groupMember.userId());
-        return GROUP_MEMBER_MAPPER.mapToResponse(user, groupMember.displayName());
-      }
-    } catch (final UserNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
   }
 
   public GroupMemberResponse find(final Integer id, final Integer userId) {
