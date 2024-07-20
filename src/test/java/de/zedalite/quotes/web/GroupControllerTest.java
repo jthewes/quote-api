@@ -96,7 +96,10 @@ class GroupControllerTest {
     final GroupResponse expectedGroup = GroupGenerator.getGroupResponse();
     willReturn(expectedGroup).given(service).updateDisplayName(anyInt(), any(GroupDisplayNameRequest.class));
 
-    final ResponseEntity<GroupResponse> response = instance.updateDisplayName(1, new GroupDisplayNameRequest("Awesome name"));
+    final ResponseEntity<GroupResponse> response = instance.updateDisplayName(
+      1,
+      new GroupDisplayNameRequest("Awesome name")
+    );
 
     then(service).should().updateDisplayName(1, new GroupDisplayNameRequest("Awesome name"));
     assertThat(response).isNotNull();

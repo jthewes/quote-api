@@ -29,5 +29,4 @@ public record Quote(
   String context,
 
   @Schema(description = "Creator's unique identifier", example = "5") @PositiveOrZero Optional<Integer> creatorId
-) {
-}
+) {}

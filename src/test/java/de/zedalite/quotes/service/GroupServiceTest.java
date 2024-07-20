@@ -268,7 +268,8 @@ class GroupServiceTest {
 
     final GroupDisplayNameRequest groupDisplayNameRequest = new GroupDisplayNameRequest("newName");
 
-    assertThatCode(() -> instance.updateDisplayName(1, groupDisplayNameRequest))
-      .isInstanceOf(ResourceNotFoundException.class);
+    assertThatCode(() -> instance.updateDisplayName(1, groupDisplayNameRequest)).isInstanceOf(
+      ResourceNotFoundException.class
+    );
   }
 }

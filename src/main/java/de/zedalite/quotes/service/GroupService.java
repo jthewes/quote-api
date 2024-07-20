@@ -119,7 +119,6 @@ public class GroupService {
     }
   }
 
-
   private GroupResponse getResponse(final Group group, final Optional<User> creator) {
     return GROUP_MAPPER.mapToResponse(group, creator.orElse(null));
   }

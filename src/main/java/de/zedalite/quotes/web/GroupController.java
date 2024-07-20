@@ -171,7 +171,8 @@ public class GroupController {
   @PatchMapping("{id}/displayname")
   public ResponseEntity<GroupResponse> updateDisplayName(
     @PathVariable("id") final Integer id,
-    @RequestBody @Valid final GroupDisplayNameRequest displayName) {
+    @RequestBody @Valid final GroupDisplayNameRequest displayName
+  ) {
     return ResponseEntity.ok(service.updateDisplayName(id, displayName));
   }
 }
