@@ -3,6 +3,7 @@ package de.zedalite.quotes.service;
 import de.zedalite.quotes.data.mapper.GroupMemberMapper;
 import de.zedalite.quotes.data.model.GroupMember;
 import de.zedalite.quotes.data.model.GroupMemberResponse;
+import de.zedalite.quotes.data.model.GroupMemberUpdateRequest;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.ResourceNotFoundException;
@@ -54,6 +55,15 @@ public class GroupMemberService {
         })
         .toList();
     } catch (final UserNotFoundException ex) {
+      throw new ResourceNotFoundException(ex.getMessage());
+    }
+  }
+
+  public GroupMemberResponse update(final Integer id, final Integer userId, final GroupMemberUpdateRequest request) {
+    try {
+      final GroupMember member = repository.update(id, userId, request);
+      return GROUP_MEMBER_MAPPER.mapToResponse(userRepository.findById(member.userId()), request.displayName());
+    } catch (final GroupNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
     }
   }

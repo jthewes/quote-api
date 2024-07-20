@@ -7,6 +7,7 @@ import de.zedalite.quotes.data.mapper.GroupMemberMapper;
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupMember;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
+import de.zedalite.quotes.data.model.GroupMemberUpdateRequest;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import java.util.List;
@@ -72,6 +73,18 @@ public class GroupMemberRepository {
       .fetchInto(Group.class);
     if (groups.isEmpty()) throw new GroupNotFoundException(GROUP_MEMBER_NOT_FOUND);
     return groups;
+  }
+
+  public GroupMember update(final Integer id, final Integer userId, final GroupMemberUpdateRequest request) {
+    final Optional<GroupMembersRecord> member = dsl
+      .update(GROUP_MEMBER)
+      .set(GROUP_MEMBER.DISPLAY_NAME, request.displayName())
+      .where(GROUP_MEMBER.GROUP_ID.eq(id))
+      .and(GROUP_MEMBER.USER_ID.eq(userId))
+      .returning()
+      .fetchOptionalInto(GroupMembersRecord.class);
+    if (member.isEmpty()) throw new GroupNotFoundException(GROUP_MEMBER_NOT_FOUND);
+    return GROUP_MEMBER_MAPPER.mapToGroupMember(member.get());
   }
 
   public void delete(final Integer id, final Integer userId) {

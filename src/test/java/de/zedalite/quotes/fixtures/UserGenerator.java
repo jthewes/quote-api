@@ -7,6 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class UserGenerator {
 
+  // TODO replace test fixures with mocks in test for better extensibility
+
   public static UserRequest getUserRequest() {
     return new UserRequest("tester", "apple", "The Tester");
   }

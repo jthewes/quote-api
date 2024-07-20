@@ -1,11 +1,14 @@
 package de.zedalite.quotes.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Mockito.mock;
 
 import de.zedalite.quotes.data.model.GroupMemberResponse;
+import de.zedalite.quotes.data.model.GroupMemberUpdateRequest;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.data.model.UserPrincipal;
 import de.zedalite.quotes.fixtures.GroupMemberGenerator;
@@ -56,6 +59,22 @@ class GroupMemberControllerTest {
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(expectedGroupMember);
+  }
+
+  @Test
+  @DisplayName("Should update group member")
+  void shouldUpdateGroupMember() {
+    final GroupMemberUpdateRequest request = mock(GroupMemberUpdateRequest.class);
+    final UserPrincipal principal = mock(UserPrincipal.class);
+    final GroupMemberResponse member = mock(GroupMemberResponse.class);
+    willReturn(member).given(service).update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class));
+
+    final ResponseEntity<GroupMemberResponse> response = instance.updateOwnMember(1, principal, request);
+
+    then(service).should().update(1, principal.getId(), request);
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(member);
   }
 
   @Test

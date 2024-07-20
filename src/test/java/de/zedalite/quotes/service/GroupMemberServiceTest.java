@@ -3,14 +3,18 @@ package de.zedalite.quotes.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.anyInt;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
 
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupMember;
 import de.zedalite.quotes.data.model.GroupMemberResponse;
+import de.zedalite.quotes.data.model.GroupMemberUpdateRequest;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.ResourceNotFoundException;
@@ -113,6 +117,33 @@ class GroupMemberServiceTest {
     final boolean result = instance.isGroupMember(1, 2);
 
     assertThat(result).isEqualTo(isInGroup);
+  }
+
+  @Test
+  @DisplayName("Should update group member")
+  void shouldUpdateGroupMember() {
+    final GroupMember member = mock(GroupMember.class);
+    final GroupMemberUpdateRequest request = mock(GroupMemberUpdateRequest.class);
+
+    given(request.displayName()).willReturn("TESTER");
+    given(repository.update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class))).willReturn(member);
+
+    final GroupMemberResponse result = instance.update(0, 0, request);
+
+    then(repository).should().update(0, 0, request);
+    then(userRepository).should().findById(0);
+    assertThat(result).isNotNull();
+    assertThat(result.displayName()).isEqualTo("TESTER");
+  }
+
+  @Test
+  @DisplayName("Should not update group member when group member not found")
+  void shouldNotUpdateGroupMemberWhenGroupMemberNotFound() {
+    final GroupMemberUpdateRequest request = mock(GroupMemberUpdateRequest.class);
+
+    willThrow(new GroupNotFoundException("Group member not found")).given(repository).update(0, 0, request);
+
+    assertThatCode(() -> instance.update(0, 0, request)).isInstanceOf(ResourceNotFoundException.class);
   }
 
   @Test

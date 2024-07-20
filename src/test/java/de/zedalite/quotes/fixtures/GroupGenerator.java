@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public class GroupGenerator {
 
+  // TODO replace test fixures with mocks in test for better extensibility
+
   public static GroupRequest getGroupRequest() {
     return new GroupRequest("test-group", "TestGrou");
   }

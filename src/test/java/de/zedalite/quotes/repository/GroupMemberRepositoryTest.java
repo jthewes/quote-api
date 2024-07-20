@@ -6,6 +6,7 @@ import de.zedalite.quotes.TestEnvironmentProvider;
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupMember;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
+import de.zedalite.quotes.data.model.GroupMemberUpdateRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.UserRequest;
 import java.util.List;
@@ -84,11 +85,17 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   }
 
   @Test
-  @DisplayName("Should return true when user is in group")
-  void shouldReturnTrueWhenUserIsInGroup() {
-    final boolean isInGroup = instance.isMember(groupId, userId);
+  @DisplayName("Should update group member")
+  void shouldUpdateGroupMember() {
+    final Integer newUserId = userRepository.save(new UserRequest("update me", "update@email.me", "me")).id();
+    final GroupMemberRequest memberRequest = new GroupMemberRequest(newUserId, "UPDATE me");
+    instance.save(groupId, memberRequest);
 
-    assertThat(isInGroup).isTrue();
+    final GroupMemberUpdateRequest request = new GroupMemberUpdateRequest("UPDATED");
+
+    final GroupMember result = instance.update(groupId, userId, request);
+
+    assertThat(result.displayName()).isEqualTo("UPDATED");
   }
 
   @Test
@@ -106,6 +113,14 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
 
     final boolean isInGroupAfterDelete = instance.isMember(newGroupId, newUserId);
     assertThat(isInGroupAfterDelete).isFalse();
+  }
+
+  @Test
+  @DisplayName("Should return true when user is in group")
+  void shouldReturnTrueWhenUserIsInGroup() {
+    final boolean isInGroup = instance.isMember(groupId, userId);
+
+    assertThat(isInGroup).isTrue();
   }
 
   @Test

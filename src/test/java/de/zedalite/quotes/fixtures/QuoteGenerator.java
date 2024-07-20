@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public class QuoteGenerator {
 
+  // TODO replace test fixures with mocks in test for better extensibility
+
   private static final QuoteMapper QUOTE_MAPPER = QuoteMapper.INSTANCE;
 
   public static QuoteRequest getQuoteRequest() {

@@ -7,6 +7,8 @@ import java.util.List;
 
 public class GroupMemberGenerator {
 
+  // TODO replace test fixures with mocks in test for better extensibility
+
   public static GroupMember getGroupMember() {
     return new GroupMember(1, 1, "KING OF THE WORLD");
   }
