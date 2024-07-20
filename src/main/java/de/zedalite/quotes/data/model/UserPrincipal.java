@@ -21,6 +21,6 @@ public record UserPrincipal(User user, Collection<? extends GrantedAuthority> au
 
   @Override
   public String getPassword() {
-    return null;
+    throw new UnsupportedOperationException("Password is not supported.");
   }
 }
