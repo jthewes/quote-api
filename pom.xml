@@ -11,7 +11,7 @@
 
   <groupId>de.zedalite</groupId>
   <artifactId>quote-service</artifactId>
-  <version>1.10.0-SNAPSHOT</version>
+  <version>1.10.1-SNAPSHOT</version>
   <name>quote-service</name>
   <description>Quote Service - A RESTful API acting as a link between the frontend and the datasource.</description>
   <packaging>jar</packaging>
@@ -31,7 +31,6 @@
     <jwks-rsa.version>0.22.1</jwks-rsa.version>
     <mapstruct.version>1.6.0.Beta2</mapstruct.version>
     <springdoc-openapi-webmvc-ui.version>2.6.0</springdoc-openapi-webmvc-ui.version>
-    <firebase.version>9.3.0</firebase.version>
     <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
     <owasp-plugin.version>10.0.2</owasp-plugin.version>
     <pitest.version>1.16.1</pitest.version>
@@ -110,17 +109,6 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${springdoc-openapi-webmvc-ui.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.firebase</groupId>
-      <artifactId>firebase-admin</artifactId>
-      <version>${firebase.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <!-- test -->
     <dependency>

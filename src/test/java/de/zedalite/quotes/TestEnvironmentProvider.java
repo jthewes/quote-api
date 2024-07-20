@@ -1,8 +1,5 @@
 package de.zedalite.quotes;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.messaging.FirebaseMessaging;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -19,14 +16,6 @@ public abstract class TestEnvironmentProvider {
     dbContainer = new PostgreSQLContainer<>("postgres:latest").withInitScript("database.sql");
     dbContainer.start();
   }
-
-  @MockBean
-  FirebaseApp firebaseApp;
-
-  @MockBean
-  FirebaseMessaging firebaseMessaging;
-
-  // TODO initially fill some table to make fixture user/quote generation easier
 
   @DynamicPropertySource
   static void registerMySQLProperties(final DynamicPropertyRegistry registry) {
