@@ -34,16 +34,4 @@ public class UserGenerator {
       new User(2, "manager", "best", "MANAGER", LocalDateTime.MIN)
     );
   }
-
-  public static UserDisplayNameRequest getDisplayNameRequest() {
-    return new UserDisplayNameRequest("Warlord");
-  }
-
-  public static UserNameRequest getUserNameRequest() {
-    return new UserNameRequest("epic-warlord");
-  }
-
-  public static UserEmailRequest getUserEmailRequest() {
-    return new UserEmailRequest("epic-warlord@gmail.com");
-  }
 }

@@ -2,8 +2,10 @@ package de.zedalite.quotes.web;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Mockito.mock;
 
 import de.zedalite.quotes.data.model.*;
 import de.zedalite.quotes.fixtures.UserGenerator;
@@ -53,40 +55,17 @@ class UserControllerTest {
   }
 
   @Test
-  @DisplayName("Should patch name")
-  void shouldPatchName() {
-    final UserNameRequest request = UserGenerator.getUserNameRequest();
-    final UserPrincipal principal = UserGenerator.getUserPrincipal();
+  @DisplayName("Should update user")
+  void shouldUpdateUser() {
+    final UserPrincipal principal = mock(UserPrincipal.class);
+    final UserUpdateRequest request = mock(UserUpdateRequest.class);
+    final UserResponse updatedUser = mock(UserResponse.class);
 
-    final ResponseEntity<Void> response = instance.patchName(request, principal);
+    given(service.update(principal.getId(), request)).willReturn(updatedUser);
 
-    then(service).should().updateName(principal.getId(), request);
-    assertThat(response).isNotNull();
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-  }
+    final ResponseEntity<UserResponse> response = instance.update(principal, request);
 
-  @Test
-  @DisplayName("Should patch displayName")
-  void shouldPatchDisplayName() {
-    final UserDisplayNameRequest request = UserGenerator.getDisplayNameRequest();
-    final UserPrincipal principal = UserGenerator.getUserPrincipal();
-
-    final ResponseEntity<Void> response = instance.patchDisplayName(request, principal);
-
-    then(service).should().updateDisplayName(principal.getId(), request);
-    assertThat(response).isNotNull();
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-  }
-
-  @Test
-  @DisplayName("Should patch email")
-  void shouldPatchEmail() {
-    final UserEmailRequest request = UserGenerator.getUserEmailRequest();
-    final UserPrincipal principal = UserGenerator.getUserPrincipal();
-
-    final ResponseEntity<Void> response = instance.patchEmail(request, principal);
-
-    then(service).should().updateEmail(principal.getId(), request);
+    then(service).should().update(principal.getId(), request);
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

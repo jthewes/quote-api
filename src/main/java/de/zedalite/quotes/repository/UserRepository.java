@@ -5,6 +5,7 @@ import de.zedalite.quotes.data.jooq.users.tables.records.UsersRecord;
 import de.zedalite.quotes.data.mapper.UserMapper;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.data.model.UserRequest;
+import de.zedalite.quotes.data.model.UserUpdateRequest;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -91,7 +92,7 @@ public class UserRepository {
   }
 
   @CachePut(value = "users", key = "#id", unless = "#result == null")
-  public User update(final Integer id, final UserRequest user) throws UserNotFoundException {
+  public User update(final Integer id, final UserUpdateRequest user) throws UserNotFoundException {
     final Optional<UsersRecord> updatedUser = dsl
       .update(USERS)
       .set(USERS.NAME, user.name())

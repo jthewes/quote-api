@@ -97,7 +97,7 @@ class GroupControllerTest {
     final GroupResponse expectedGroup = mock(GroupResponse.class);
     willReturn(expectedGroup).given(service).update(anyInt(), any(GroupUpdateRequest.class));
 
-    final ResponseEntity<GroupResponse> response = instance.updateDisplayName(
+    final ResponseEntity<GroupResponse> response = instance.updateGroup(
       1,
       new GroupUpdateRequest("Awesome name", "code")
     );

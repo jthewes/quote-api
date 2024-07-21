@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import de.zedalite.quotes.TestEnvironmentProvider;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.data.model.UserRequest;
+import de.zedalite.quotes.data.model.UserUpdateRequest;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -89,7 +90,7 @@ class UserRepositoryTest extends TestEnvironmentProvider {
   @DisplayName("Should update user")
   void shouldUpdateUser() {
     final Integer userId = instance.save(new UserRequest("super", "email@test.com", "Super")).id();
-    final UserRequest request = new UserRequest("mega", "email@test.com", "MEGA");
+    final UserUpdateRequest request = new UserUpdateRequest("mega", "email@test.com", "MEGA");
 
     final User updatedUser = instance.update(userId, request);
 

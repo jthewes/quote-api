@@ -168,9 +168,9 @@ public class GroupController {
   }
 
   @Operation(
-    summary = "Update group's display name",
-    description = "Update group's display name",
-    operationId = "updateDisplayName",
+    summary = "Update group",
+    description = "Update group",
+    operationId = "updateGroup",
     responses = {
       @ApiResponse(
         responseCode = "200",
@@ -196,11 +196,10 @@ public class GroupController {
   )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @PatchMapping("{id}")
-  public ResponseEntity<GroupResponse> updateDisplayName(
+  public ResponseEntity<GroupResponse> updateGroup(
     @PathVariable("id") final Integer id,
     @RequestBody @Valid final GroupUpdateRequest request
   ) {
-    // TODO Fix patch method when field is not set, the according field should not be updated
     return ResponseEntity.ok(service.update(id, request));
   }
 }
