@@ -5,6 +5,7 @@ import de.zedalite.quotes.data.jooq.quotes.tables.records.GroupsRecord;
 import de.zedalite.quotes.data.mapper.GroupMapper;
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupRequest;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.QuoteNotFoundException;
 import java.time.LocalDateTime;
@@ -78,11 +79,11 @@ public class GroupRepository {
     return GROUP_MAPPER.mapToGroup(group.get());
   }
 
-  public Group update(final Integer id, final GroupRequest request) {
+  public Group update(final Integer id, final GroupUpdateRequest request) {
     final Optional<GroupsRecord> updatedGroup = dsl
       .update(GROUPS)
-      .set(GROUPS.INVITE_CODE, request.inviteCode())
       .set(GROUPS.DISPLAY_NAME, request.displayName())
+      .set(GROUPS.INVITE_CODE, request.inviteCode())
       .where(GROUPS.ID.eq(id))
       .returning()
       .fetchOptionalInto(GroupsRecord.class);

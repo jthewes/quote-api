@@ -2,10 +2,10 @@ package de.zedalite.quotes.service;
 
 import de.zedalite.quotes.data.mapper.GroupMapper;
 import de.zedalite.quotes.data.model.Group;
-import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.ResourceAlreadyExitsException;
@@ -15,6 +15,7 @@ import de.zedalite.quotes.repository.GroupMemberRepository;
 import de.zedalite.quotes.repository.GroupRepository;
 import de.zedalite.quotes.repository.UserRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -101,18 +102,16 @@ public class GroupService {
     }
   }
 
-  public Group update(final Integer id, final GroupRequest request) {
-    try {
-      return repository.update(id, request);
-    } catch (final GroupNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
-  }
-
-  public GroupResponse updateDisplayName(final Integer id, final GroupDisplayNameRequest request) {
+  public GroupResponse update(final Integer id, final GroupUpdateRequest request) {
     try {
       final Group group = repository.findById(id);
-      final Group updatedGroup = update(1, new GroupRequest(request.displayName(), group.inviteCode()));
+
+      final GroupUpdateRequest updateRequest = new GroupUpdateRequest(
+        Objects.requireNonNullElse(request.displayName(), group.displayName()),
+        Objects.requireNonNullElse(request.inviteCode(), group.inviteCode())
+      ); // only update updated fields
+
+      final Group updatedGroup = repository.update(id, updateRequest);
       return getResponse(updatedGroup, getUser(group.creatorId()));
     } catch (final GroupNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());

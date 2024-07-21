@@ -6,15 +6,17 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.anyInt;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
 
 import de.zedalite.quotes.data.model.Group;
-import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.ResourceAlreadyExitsException;
@@ -225,51 +227,39 @@ class GroupServiceTest {
   @Test
   @DisplayName("Should update group when group exists")
   void shouldUpdateGroupWhenGroupExists() {
-    final Group expectedGroup = GroupGenerator.getGroup();
-    final GroupRequest groupRequest = GroupGenerator.getGroupRequest();
-    willReturn(expectedGroup).given(groupRepository).update(anyInt(), any(GroupRequest.class));
+    final Group group = mock(Group.class);
+    final Group updatedGroup = mock(Group.class);
+    final GroupUpdateRequest groupRequest = mock(GroupUpdateRequest.class);
 
-    final Group result = instance.update(1, groupRequest);
+    given(groupRepository.findById(anyInt())).willReturn(group);
+    given(groupRepository.update(anyInt(), any(GroupUpdateRequest.class))).willReturn(updatedGroup);
+    given(group.displayName()).willReturn("TestGroup");
+    given(group.inviteCode()).willReturn("TestCode");
+    given(updatedGroup.displayName()).willReturn("NewName");
+    given(updatedGroup.inviteCode()).willReturn("NewCode");
+    given(groupRequest.displayName()).willReturn("NewName");
+    given(groupRequest.inviteCode()).willReturn("NewCode");
 
-    then(groupRepository).should().update(1, groupRequest);
+    final GroupResponse result = instance.update(group.id(), groupRequest);
+
+    then(groupRepository).should().findById(group.id());
+    then(groupRepository).should().update(anyInt(), any(GroupUpdateRequest.class));
     assertThat(result).isNotNull();
+    assertThat(result.group().displayName()).isEqualTo("NewName");
+    assertThat(result.group().inviteCode()).isEqualTo("NewCode");
   }
 
   @Test
   @DisplayName("Should throw exception when updating non existing group")
   void shouldThrowExceptionWhenUpdatingNonExistingGroup() {
-    final GroupRequest groupRequest = GroupGenerator.getGroupRequest();
-    willThrow(GroupNotFoundException.class).given(groupRepository).update(anyInt(), any(GroupRequest.class));
+    final Group group = mock(Group.class);
+    final GroupUpdateRequest groupRequest = mock(GroupUpdateRequest.class);
+    given(groupRepository.findById(anyInt())).willReturn(group);
+    given(group.displayName()).willReturn("TestGroup");
+    given(group.inviteCode()).willReturn("TestCode");
+
+    willThrow(GroupNotFoundException.class).given(groupRepository).update(anyInt(), any(GroupUpdateRequest.class));
 
     assertThatCode(() -> instance.update(1, groupRequest)).isInstanceOf(ResourceNotFoundException.class);
-  }
-
-  @Test
-  @DisplayName("Should update displayname when group exists")
-  void shouldUpdateDisplaynameWhenGroupExists() {
-    final Group expectedGroup = GroupGenerator.getGroup();
-    final User expectedUser = UserGenerator.getUser();
-    willReturn(expectedGroup).given(groupRepository).findById(anyInt());
-    willReturn(expectedGroup).given(groupRepository).update(anyInt(), any(GroupRequest.class));
-    willReturn(expectedUser).given(userRepository).findById(anyInt());
-
-    final GroupResponse result = instance.updateDisplayName(1, new GroupDisplayNameRequest("newName"));
-
-    then(groupRepository).should().findById(1);
-
-    then(groupRepository).should().update(1, new GroupRequest("newName", expectedGroup.inviteCode()));
-    assertThat(result).isNotNull();
-  }
-
-  @Test
-  @DisplayName("Should throw exception when updating displayname of non existing group")
-  void shouldThrowExceptionWhenUpdatingDisplaynameOfNonExistingGroup() {
-    willThrow(GroupNotFoundException.class).given(groupRepository).findById(anyInt());
-
-    final GroupDisplayNameRequest groupDisplayNameRequest = new GroupDisplayNameRequest("newName");
-
-    assertThatCode(() -> instance.updateDisplayName(1, groupDisplayNameRequest)).isInstanceOf(
-      ResourceNotFoundException.class
-    );
   }
 }

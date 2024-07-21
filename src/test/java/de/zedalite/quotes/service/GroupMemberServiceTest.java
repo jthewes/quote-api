@@ -123,25 +123,60 @@ class GroupMemberServiceTest {
   @DisplayName("Should update group member")
   void shouldUpdateGroupMember() {
     final GroupMember member = mock(GroupMember.class);
+    final GroupMember updatedMember = mock(GroupMember.class);
     final GroupMemberUpdateRequest request = mock(GroupMemberUpdateRequest.class);
 
-    given(request.displayName()).willReturn("TESTER");
-    given(repository.update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class))).willReturn(member);
+    given(repository.findById(anyInt(), anyInt())).willReturn(member);
+    given(repository.update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class))).willReturn(updatedMember);
+    given(userRepository.findById(anyInt())).willReturn(mock(User.class));
+    given(member.displayName()).willReturn("Tester");
+    given(updatedMember.displayName()).willReturn("NEW TESTER");
+    given(request.displayName()).willReturn("Tester");
 
-    final GroupMemberResponse result = instance.update(0, 0, request);
+    final GroupMemberResponse result = instance.update(member.groupId(), member.userId(), request);
 
-    then(repository).should().update(0, 0, request);
+    then(repository).should().findById(member.groupId(), member.userId());
+    then(repository).should().update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class));
     then(userRepository).should().findById(0);
     assertThat(result).isNotNull();
-    assertThat(result.displayName()).isEqualTo("TESTER");
+    assertThat(result.displayName()).isEqualTo("NEW TESTER");
+  }
+
+  @Test
+  @DisplayName("Should update group member when displayName unset")
+  void shouldUpdateGroupMemberWhenDisplayNameUnset() {
+    final GroupMember member = mock(GroupMember.class);
+    final GroupMember updatedMember = mock(GroupMember.class);
+    final GroupMemberUpdateRequest request = mock(GroupMemberUpdateRequest.class);
+
+    given(repository.findById(anyInt(), anyInt())).willReturn(member);
+    given(repository.update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class))).willReturn(updatedMember);
+    given(userRepository.findById(anyInt())).willReturn(mock(User.class));
+    given(member.displayName()).willReturn(null);
+    given(updatedMember.displayName()).willReturn("NEW TESTER");
+    given(request.displayName()).willReturn(null);
+
+    final GroupMemberResponse result = instance.update(member.groupId(), member.userId(), request);
+
+    then(repository).should().findById(member.groupId(), member.userId());
+    then(repository).should().update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class));
+    then(userRepository).should().findById(0);
+    assertThat(result).isNotNull();
+    assertThat(result.displayName()).isEqualTo("NEW TESTER");
   }
 
   @Test
   @DisplayName("Should not update group member when group member not found")
   void shouldNotUpdateGroupMemberWhenGroupMemberNotFound() {
+    final GroupMember member = mock(GroupMember.class);
     final GroupMemberUpdateRequest request = mock(GroupMemberUpdateRequest.class);
 
-    willThrow(new GroupNotFoundException("Group member not found")).given(repository).update(0, 0, request);
+    given(repository.findById(anyInt(), anyInt())).willReturn(member);
+    given(member.displayName()).willReturn("TESTER");
+
+    willThrow(new GroupNotFoundException("Group member not found"))
+      .given(repository)
+      .update(anyInt(), anyInt(), any(GroupMemberUpdateRequest.class));
 
     assertThatCode(() -> instance.update(0, 0, request)).isInstanceOf(ResourceNotFoundException.class);
   }

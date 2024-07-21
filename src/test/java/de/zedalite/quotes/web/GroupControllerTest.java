@@ -5,10 +5,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
+import static org.mockito.Mockito.mock;
 
-import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.UserPrincipal;
 import de.zedalite.quotes.fixtures.GroupGenerator;
 import de.zedalite.quotes.fixtures.UserGenerator;
@@ -93,15 +94,15 @@ class GroupControllerTest {
   @Test
   @DisplayName("Should update group display name ")
   void shouldUpdateGroupDisplayName() {
-    final GroupResponse expectedGroup = GroupGenerator.getGroupResponse();
-    willReturn(expectedGroup).given(service).updateDisplayName(anyInt(), any(GroupDisplayNameRequest.class));
+    final GroupResponse expectedGroup = mock(GroupResponse.class);
+    willReturn(expectedGroup).given(service).update(anyInt(), any(GroupUpdateRequest.class));
 
     final ResponseEntity<GroupResponse> response = instance.updateDisplayName(
       1,
-      new GroupDisplayNameRequest("Awesome name")
+      new GroupUpdateRequest("Awesome name", "code")
     );
 
-    then(service).should().updateDisplayName(1, new GroupDisplayNameRequest("Awesome name"));
+    then(service).should().update(1, new GroupUpdateRequest("Awesome name", "code"));
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

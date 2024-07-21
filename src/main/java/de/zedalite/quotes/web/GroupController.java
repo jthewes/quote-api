@@ -1,9 +1,9 @@
 package de.zedalite.quotes.web;
 
 import de.zedalite.quotes.data.model.ErrorResponse;
-import de.zedalite.quotes.data.model.GroupDisplayNameRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.UserPrincipal;
 import de.zedalite.quotes.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -195,11 +195,12 @@ public class GroupController {
     }
   )
   @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
-  @PatchMapping("{id}/displayname")
+  @PatchMapping("{id}")
   public ResponseEntity<GroupResponse> updateDisplayName(
     @PathVariable("id") final Integer id,
-    @RequestBody @Valid final GroupDisplayNameRequest displayName
+    @RequestBody @Valid final GroupUpdateRequest request
   ) {
-    return ResponseEntity.ok(service.updateDisplayName(id, displayName));
+    // TODO Fix patch method when field is not set, the according field should not be updated
+    return ResponseEntity.ok(service.update(id, request));
   }
 }

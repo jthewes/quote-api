@@ -10,6 +10,7 @@ import de.zedalite.quotes.exception.ResourceNotFoundException;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import de.zedalite.quotes.repository.GroupMemberRepository;
 import de.zedalite.quotes.repository.UserRepository;
+import de.zedalite.quotes.utils.ObjectUtils;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -61,8 +62,17 @@ public class GroupMemberService {
 
   public GroupMemberResponse update(final Integer id, final Integer userId, final GroupMemberUpdateRequest request) {
     try {
-      final GroupMember member = repository.update(id, userId, request);
-      return GROUP_MEMBER_MAPPER.mapToResponse(userRepository.findById(member.userId()), request.displayName());
+      final GroupMember member = repository.findById(id, userId);
+
+      final GroupMemberUpdateRequest updateRequest = new GroupMemberUpdateRequest(
+        ObjectUtils.requireNonNullElse(request.displayName(), member.displayName())
+      ); // only update updated fields
+
+      final GroupMember updatedMember = repository.update(id, userId, updateRequest);
+      return GROUP_MEMBER_MAPPER.mapToResponse(
+        userRepository.findById(updatedMember.userId()),
+        updatedMember.displayName()
+      );
     } catch (final GroupNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
     }

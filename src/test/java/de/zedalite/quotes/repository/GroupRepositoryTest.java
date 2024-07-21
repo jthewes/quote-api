@@ -6,9 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import de.zedalite.quotes.TestEnvironmentProvider;
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupRequest;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.UserRequest;
 import de.zedalite.quotes.exception.GroupNotFoundException;
-import de.zedalite.quotes.fixtures.GroupGenerator;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -118,7 +118,7 @@ class GroupRepositoryTest extends TestEnvironmentProvider {
   @DisplayName("Should update group")
   void shouldUpdateGroup() {
     final Integer groupId = instance.save(new GroupRequest("displayName", "joinMe"), 1).id();
-    final GroupRequest groupRequest = new GroupRequest("LALALLA", "LALALLA");
+    final GroupUpdateRequest groupRequest = new GroupUpdateRequest("LALALLA", "LALALLA");
 
     final Group updatedGroup = instance.update(groupId, groupRequest);
 
@@ -131,7 +131,7 @@ class GroupRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should throw exception updating non-existing group")
   void shouldThrowExceptionUpdatingNonExistingGroup() {
-    final GroupRequest request = GroupGenerator.getGroupRequest();
-    assertThatCode(() -> instance.update(999, request)).isInstanceOf(GroupNotFoundException.class);
+    final GroupUpdateRequest groupRequest = new GroupUpdateRequest("LALALLA", "LALALLA");
+    assertThatCode(() -> instance.update(999, groupRequest)).isInstanceOf(GroupNotFoundException.class);
   }
 }
