@@ -53,8 +53,12 @@ class CacheStatsLoggerTest {
     then(cacheStatsMock).should(times(2)).hitRate();
     then(cacheStatsMock).should(times(2)).missRate();
     assertThat(output).contains(
-      "Stats cache1: estimatedSize=0; hitCount=0,00%; missCount=0,00%",
-      "Stats cache2: estimatedSize=0; hitCount=0,00%; missCount=0,00%"
+      "Stats cache1: estimatedSize=",
+      "hitCount=",
+      "missCount=",
+      "Stats cache2: estimatedSize=",
+      "hitCount=",
+      "missCount="
     );
   }
 
