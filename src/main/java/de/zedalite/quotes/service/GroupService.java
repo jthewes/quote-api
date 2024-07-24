@@ -66,14 +66,6 @@ public class GroupService {
     }
   }
 
-  public List<Integer> findAllIds() {
-    try {
-      return repository.findAllIds();
-    } catch (final GroupNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
-  }
-
   private Optional<User> getUser(final Optional<Integer> creatorId) {
     if (creatorId.isEmpty()) {
       return Optional.empty();
@@ -103,6 +95,7 @@ public class GroupService {
   }
 
   public GroupResponse update(final Integer id, final GroupUpdateRequest request) {
+    // TODO: Add validation for unique invite code
     try {
       final Group group = repository.findById(id);
 

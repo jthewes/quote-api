@@ -11,6 +11,7 @@ import de.zedalite.quotes.exception.QotdNotFoundException;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.jooq.DSLContext;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,7 @@ public class GroupQuoteOfTheDayRepository {
     this.dsl = dsl;
   }
 
+  @CachePut(value = "qotd", key = "{#result.id(),#result.creationDate()}", unless = "#result == null")
   public QuoteOfTheDay save(final Integer id, final QuoteOfTheDayRequest request) {
     final Optional<QuotesOfTheDayRecord> savedQotd = dsl
       .insertInto(QOTD)

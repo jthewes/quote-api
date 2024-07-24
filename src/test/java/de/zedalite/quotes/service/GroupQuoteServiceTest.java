@@ -6,7 +6,6 @@ import static de.zedalite.quotes.data.model.SortMode.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.BDDMockito.anyInt;
-import static org.mockito.BDDMockito.anyList;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
@@ -54,10 +53,10 @@ class GroupQuoteServiceTest {
   void shouldCreateGroupQuote() {
     final QuoteRequest quoteRequest = QuoteGenerator.getQuoteRequest();
     final Quote expectedQuote = QuoteGenerator.getQuoteWithMentions();
-    final List<User> expectedUsers = List.of(UserGenerator.getUser());
+    final User expectedUser = UserGenerator.getUser();
 
     willReturn(expectedQuote).given(repository).save(1, quoteRequest, 5);
-    willReturn(expectedUsers).given(userRepository).findAllByIds(anyList());
+    willReturn(expectedUser).given(userRepository).findById(anyInt());
 
     final QuoteResponse result = instance.create(1, quoteRequest, 5);
 

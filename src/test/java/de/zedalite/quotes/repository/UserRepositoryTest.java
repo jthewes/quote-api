@@ -9,6 +9,7 @@ import de.zedalite.quotes.data.model.UserRequest;
 import de.zedalite.quotes.data.model.UserUpdateRequest;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,18 +45,10 @@ class UserRepositoryTest extends TestEnvironmentProvider {
   }
 
   @Test
-  @DisplayName("Should find all users")
-  void shouldFindAllUsers() {
-    final List<User> users = instance.findAll();
-
-    assertThat(users).hasSizeGreaterThanOrEqualTo(1);
-  }
-
-  @Test
   @DisplayName("Should find all by ids")
   void shouldFindAllByIds() {
     final Integer id = instance.findByName("repoTester").id();
-    final List<User> users = instance.findAllByIds(List.of(id));
+    final List<User> users = Stream.of(id).map(instance::findById).toList();
 
     assertThat(users).hasSize(1);
     assertThat(users.getFirst().name()).isEqualTo("repoTester");

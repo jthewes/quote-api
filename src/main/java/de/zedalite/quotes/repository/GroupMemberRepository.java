@@ -13,7 +13,10 @@ import de.zedalite.quotes.exception.UserNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import org.jooq.DSLContext;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -30,6 +33,14 @@ public class GroupMemberRepository {
     this.dsl = dsl;
   }
 
+  @Caching(
+    put = @CachePut(value = "groupmembers", key = "{#result.groupId(),#result.userId()}", unless = "#result = null"),
+    evict = {
+      @CacheEvict(value = "groupmembers_members", key = "{#result.groupId()}"),
+      @CacheEvict(value = "groupmembers_groups", key = "{#result.userId()}"),
+      @CacheEvict(value = "groupmembers_verification", key = "{#result.groupId(),#result.userId()}"),
+    }
+  )
   public GroupMember save(final Integer id, final GroupMemberRequest request) {
     final Optional<GroupMembersRecord> savedGroupMember = dsl
       .insertInto(GROUP_MEMBER)
@@ -44,7 +55,7 @@ public class GroupMemberRepository {
     return GROUP_MEMBER_MAPPER.mapToGroupMember(savedGroupMember.get());
   }
 
-  @Cacheable(value = "group_users", key = "{#id,#userId}", unless = "#result = null")
+  @Cacheable(value = "groupmembers", key = "{#id,#userId}", unless = "#result = null")
   public GroupMember findById(final Integer id, final Integer userId) {
     final Optional<GroupMembersRecord> user = dsl
       .selectFrom(GROUP_MEMBER)
@@ -56,6 +67,7 @@ public class GroupMemberRepository {
     return GROUP_MEMBER_MAPPER.mapToGroupMember(user.get());
   }
 
+  @Cacheable(value = "groupmembers_members", key = "{#groupId}", unless = "#result = null")
   public List<GroupMember> findMembers(final Integer groupId) {
     final List<GroupMembersRecord> members = dsl
       .selectFrom(GROUP_MEMBER)
@@ -65,6 +77,7 @@ public class GroupMemberRepository {
     return GROUP_MEMBER_MAPPER.mapToGroupMembers(members);
   }
 
+  @Cacheable(value = "groupmembers_groups", key = "{#userId}", unless = "#result = null")
   public List<Group> findGroups(final Integer userId) {
     final List<Group> groups = dsl
       .select(GROUPS)
@@ -75,6 +88,7 @@ public class GroupMemberRepository {
     return groups;
   }
 
+  @CachePut(value = "groupmembers", key = "{#result.groupId(),#result.userId()}", unless = "#result = null")
   public GroupMember update(final Integer id, final Integer userId, final GroupMemberUpdateRequest request) {
     final Optional<GroupMembersRecord> member = dsl
       .update(GROUP_MEMBER)
@@ -87,6 +101,14 @@ public class GroupMemberRepository {
     return GROUP_MEMBER_MAPPER.mapToGroupMember(member.get());
   }
 
+  @Caching(
+    evict = {
+      @CacheEvict(value = "groupmembers", key = "{#id,#userId}"),
+      @CacheEvict(value = "groupmembers_members", key = "{#id}"),
+      @CacheEvict(value = "groupmembers_groups", key = "{#userId}"),
+      @CacheEvict(value = "groupmembers_verification", key = "{#id,#userId}"),
+    }
+  )
   public void delete(final Integer id, final Integer userId) {
     final boolean isDeleted =
       dsl.deleteFrom(GROUP_MEMBER).where(GROUP_MEMBER.GROUP_ID.eq(id)).and(GROUP_MEMBER.USER_ID.eq(userId)).execute() ==
@@ -94,6 +116,7 @@ public class GroupMemberRepository {
     if (!isDeleted) throw new GroupNotFoundException(GROUP_MEMBER_NOT_FOUND);
   }
 
+  @Cacheable(value = "groupmembers_verification", key = "{#id,#userId}", unless = "#result = null")
   public boolean isMember(final Integer id, final Integer userId) {
     return dsl.fetchExists(
       dsl.selectFrom(GROUP_MEMBER).where(GROUP_MEMBER.GROUP_ID.eq(id)).and(GROUP_MEMBER.USER_ID.eq(userId))

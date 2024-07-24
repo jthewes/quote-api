@@ -158,26 +158,6 @@ class GroupServiceTest {
   }
 
   @Test
-  @DisplayName("Should find all group ids")
-  void shouldFindAllGroupIds() {
-    final List<Integer> expectedIds = GroupGenerator.getGroups().stream().map(Group::id).toList();
-    willReturn(expectedIds).given(groupRepository).findAllIds();
-
-    final List<Integer> result = instance.findAllIds();
-
-    then(groupRepository).should().findAllIds();
-    assertThat(result).hasSizeGreaterThanOrEqualTo(1);
-  }
-
-  @Test
-  @DisplayName("Should throw exception when group ids not found")
-  void shouldThrowExceptionWhenGroupIdsNotFound() {
-    willThrow(GroupNotFoundException.class).given(groupRepository).findAllIds();
-
-    assertThatCode(() -> instance.findAllIds()).isInstanceOf(ResourceNotFoundException.class);
-  }
-
-  @Test
   @DisplayName("Should allow user to join group")
   void shouldAllowUserToJoinGroup() {
     final Group expectedGroup = GroupGenerator.getGroup();

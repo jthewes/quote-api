@@ -1,52 +1,22 @@
 package de.zedalite.quotes.scheduling;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import de.zedalite.quotes.exception.ResourceNotFoundException;
-import de.zedalite.quotes.service.GroupQuoteOfTheDayService;
-import de.zedalite.quotes.service.GroupService;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(OutputCaptureExtension.class)
 class QuoteOfTheDaySchedulerTest {
 
-  @InjectMocks
-  private QuoteOfTheDayScheduler instance;
-
-  @Mock
-  private GroupService groupService;
-
-  @Mock
-  private GroupQuoteOfTheDayService groupQuoteOfTheDayService;
+  private final QuoteOfTheDayScheduler instance = new QuoteOfTheDayScheduler();
 
   @Test
   @DisplayName("Should reset quoteOfTheDay")
-  void shouldResetQuoteOfTheDay() {
-    final List<Integer> allIds = List.of(1, 2);
-    given(groupService.findAllIds()).willReturn(allIds);
-
+  void shouldResetQuoteOfTheDayCache(final CapturedOutput output) {
     instance.resetQuoteOfTheDay();
-
-    then(groupQuoteOfTheDayService).should(times(2)).findQuoteOfTheDay(anyInt());
-  }
-
-  @Test
-  @DisplayName("Should ignore ResourceException")
-  void shouldIgnoreResourceException() {
-    final List<Integer> allIds = List.of(1, 2);
-    given(groupService.findAllIds()).willReturn(allIds);
-    given(groupQuoteOfTheDayService.findQuoteOfTheDay(anyInt())).willThrow(ResourceNotFoundException.class);
-
-    assertThatCode(() -> instance.resetQuoteOfTheDay()).doesNotThrowAnyException();
+    assertThat(output).contains("Cache evicted for quote of the day.");
   }
 }

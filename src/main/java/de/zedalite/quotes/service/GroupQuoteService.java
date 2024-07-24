@@ -128,6 +128,6 @@ public class GroupQuoteService {
   }
 
   private List<User> getMentions(final List<Integer> userIds) {
-    return userIds.isEmpty() ? Collections.emptyList() : userRepository.findAllByIds(userIds);
+    return userIds.isEmpty() ? Collections.emptyList() : userIds.stream().map(userRepository::findById).toList();
   }
 }

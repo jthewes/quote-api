@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.BDDMockito.willThrow;
@@ -48,11 +47,11 @@ class GroupQuoteOfTheDayServiceTest {
   @DisplayName("Should find quote of the day")
   void shouldFindQuoteOfTheDay() {
     final Quote expectedQotd = QuoteGenerator.getQuoteWithMentions();
-    final List<User> expectedUsers = List.of(UserGenerator.getUser());
+    final User expectedUser = UserGenerator.getUser();
 
     willReturn(10).given(groupQuoteRepository).count(anyInt());
     willReturn(expectedQotd).given(repository).findByDate(anyInt(), any(LocalDate.class));
-    willReturn(expectedUsers).given(userRepository).findAllByIds(anyList());
+    willReturn(expectedUser).given(userRepository).findById(anyInt());
 
     final QuoteResponse quoteOfTheDay = instance.findQuoteOfTheDay(1);
 

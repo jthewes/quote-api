@@ -9,11 +9,12 @@ import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.exception.GroupNotFoundException;
 import de.zedalite.quotes.exception.QuoteNotFoundException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import org.jooq.DSLContext;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -58,18 +59,7 @@ public class GroupRepository {
     return GROUP_MAPPER.mapToGroup(group.get());
   }
 
-  public List<Group> findAll() {
-    final List<GroupsRecord> groups = dsl.selectFrom(GROUPS).fetchInto(GroupsRecord.class);
-    if (groups.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
-    return GROUP_MAPPER.mapToGroups(groups);
-  }
-
-  public List<Integer> findAllIds() {
-    final List<Integer> ids = dsl.select(GROUPS.ID).from(GROUPS).fetchInto(Integer.class);
-    if (ids.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
-    return ids;
-  }
-
+  @Cacheable(value = "groupcodes", key = "#code", unless = "#result == null")
   public Group findByCode(final String code) {
     final Optional<GroupsRecord> group = dsl
       .selectFrom(GROUPS)
@@ -79,6 +69,11 @@ public class GroupRepository {
     return GROUP_MAPPER.mapToGroup(group.get());
   }
 
+  @Caching(
+    cacheable = @Cacheable(value = "groups", key = "#id", unless = "#result == null"),
+    evict = @CacheEvict(value = "groupcodes", allEntries = true)
+  )
+  @Cacheable(value = "groups", key = "#id", unless = "#result == null")
   public Group update(final Integer id, final GroupUpdateRequest request) {
     final Optional<GroupsRecord> updatedGroup = dsl
       .update(GROUPS)

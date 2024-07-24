@@ -9,10 +9,8 @@ import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.UserRequest;
 import de.zedalite.quotes.exception.GroupNotFoundException;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -67,36 +65,6 @@ class GroupRepositoryTest extends TestEnvironmentProvider {
   @DisplayName("Should throw exception finding group by non-existing id")
   void shouldThrowExceptionFindingGroupByNonExistingId() {
     assertThatCode(() -> instance.findById(999)).isInstanceOf(GroupNotFoundException.class);
-  }
-
-  @Test
-  @DisplayName("Should find all groups")
-  void shouldFindAllGroups() {
-    final List<Group> users = instance.findAll();
-
-    assertThat(users).hasSizeGreaterThanOrEqualTo(2);
-  }
-
-  @Test
-  @Disabled("implement separate group to be able to test this case")
-  @DisplayName("Should throw exception finding all groups")
-  void shouldThrowExceptionFindingAllGroups() {
-    assertThatCode(() -> instance.findAll()).isInstanceOf(GroupNotFoundException.class);
-  }
-
-  @Test
-  @DisplayName("Should find all groups ids")
-  void shouldFindAllGroupsIds() {
-    final List<Integer> ids = instance.findAllIds();
-
-    assertThat(ids).hasSizeGreaterThanOrEqualTo(2);
-  }
-
-  @Test
-  @Disabled("implement separate group to be able to test this case")
-  @DisplayName("Should throw exception finding all group ids")
-  void shouldThrowExceptionFindingAllGroupIds() {
-    assertThatCode(() -> instance.findAllIds()).isInstanceOf(GroupNotFoundException.class);
   }
 
   @Test

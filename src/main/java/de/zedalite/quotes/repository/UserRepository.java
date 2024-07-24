@@ -8,7 +8,6 @@ import de.zedalite.quotes.data.model.UserRequest;
 import de.zedalite.quotes.data.model.UserUpdateRequest;
 import de.zedalite.quotes.exception.UserNotFoundException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import org.jooq.DSLContext;
 import org.springframework.cache.annotation.CachePut;
@@ -55,23 +54,7 @@ public class UserRepository {
     return USER_MAPPER.mapToUser(savedUser.get());
   }
 
-  public List<User> findAll() {
-    final List<UsersRecord> users = dsl.selectFrom(USERS).fetchInto(UsersRecord.class);
-    if (users.isEmpty()) throw new UserNotFoundException(USER_NOT_FOUND);
-    return USER_MAPPER.mapToUserList(users);
-  }
-
-  // TODO Cache result or better integrate in user cache
-
-  public List<User> findAllByIds(final List<Integer> ids) throws UserNotFoundException {
-    final List<UsersRecord> users = dsl.selectFrom(USERS).where(USERS.ID.in(ids)).fetchInto(UsersRecord.class);
-    if (users.isEmpty()) throw new UserNotFoundException(USER_NOT_FOUND);
-    return USER_MAPPER.mapToUserList(users);
-  }
-
-  // TODO Cache result or better integrate in user cache -> otherwise sync problem when cacheput
-  // -> custom implementiation of cache to search for name in exisiting cache
-  @Cacheable(value = "users", key = "#name", unless = "#result == null")
+  @Cacheable(value = "usernames", key = "#name", unless = "#result == null")
   public User findByName(final String name) {
     final Optional<UsersRecord> user = dsl
       .selectFrom(USERS)
@@ -105,15 +88,15 @@ public class UserRepository {
     return USER_MAPPER.mapToUser(updatedUser.get());
   }
 
+  public boolean doesUserNonExist(final Integer id) {
+    return !dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.ID.eq(id)));
+  }
+
   public boolean isUsernameTaken(final String name) {
     return dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.NAME.eq(name)));
   }
 
   public boolean isUsernameAvailable(final String name) {
     return !dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.NAME.eq(name)));
-  }
-
-  public boolean doesUserNonExist(final Integer id) {
-    return !dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.ID.eq(id)));
   }
 }

@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.jooq.DSLContext;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -33,7 +35,10 @@ public class GroupQuoteRepository {
     this.dsl = dsl;
   }
 
-  @CachePut(value = "group_quotes_single", key = "{#id,#result.id}", unless = "#result == null")
+  @Caching(
+    put = @CachePut(value = "groupquotes", key = "{#id,#result.id}", unless = "#result == null"),
+    evict = @CacheEvict(value = "groupquotes_quotes", key = "{#id}")
+  )
   public Quote save(final Integer id, final QuoteRequest quote, final Integer creatorId) {
     final Optional<QuotesRecord> savedQuoteRec = dsl
       .insertInto(QUOTES)
@@ -52,7 +57,7 @@ public class GroupQuoteRepository {
     return savedQuote;
   }
 
-  @Cacheable(value = "group_quotes_single", key = "{#id,#quoteId}", unless = "#result = null")
+  @Cacheable(value = "groupquotes", key = "{#id,#quoteId}", unless = "#result = null")
   public Quote findById(final Integer id, final Integer quoteId) {
     final Optional<Quote> quote = dsl
       .select(QUOTES)
@@ -64,7 +69,7 @@ public class GroupQuoteRepository {
   }
 
   // TODO implement caching, optimise with single caching or learn how to manipulate the cache to insert multiple values
-  //@Cacheable(value = "group_quotes", key = "{#id}", unless = "#result = null")
+  @Cacheable(value = "groupquotes_quotes", key = "{#id}", unless = "#result = null")
   public List<Quote> findAll(final Integer id) {
     final List<Quote> quotes = dsl
       .select(QUOTES)
