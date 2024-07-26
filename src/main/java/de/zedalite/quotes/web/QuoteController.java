@@ -35,6 +35,11 @@ public class QuoteController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = CountResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "404",
         description = "Quotes not found",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))

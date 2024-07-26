@@ -51,6 +51,11 @@ public class GroupMemberController {
         }
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Principal is no group member",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -77,6 +82,11 @@ public class GroupMemberController {
         responseCode = "200",
         description = "Group member found",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupMemberResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "403",
@@ -110,6 +120,11 @@ public class GroupMemberController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupMemberResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Principal is no group member",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -137,6 +152,11 @@ public class GroupMemberController {
     operationId = "leaveGroup",
     responses = {
       @ApiResponse(responseCode = "204", description = "Group left"),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
       @ApiResponse(
         responseCode = "403",
         description = "Group leaving not allowed",

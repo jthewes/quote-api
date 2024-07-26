@@ -39,6 +39,11 @@ public class UserController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "User creation not allowed",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -66,6 +71,11 @@ public class UserController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "User retrieval not allowed",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -90,6 +100,11 @@ public class UserController {
       @ApiResponse(
         responseCode = "200",
         description = "Name patched",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
         content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(

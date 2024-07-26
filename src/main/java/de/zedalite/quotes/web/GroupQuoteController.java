@@ -56,6 +56,11 @@ public class GroupQuoteController {
         )
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Principal is no group member",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -90,6 +95,11 @@ public class GroupQuoteController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = QuoteResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Principal is no group member",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -119,6 +129,11 @@ public class GroupQuoteController {
         responseCode = "200",
         description = "Group quotes count found",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = CountResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "403",
@@ -152,6 +167,11 @@ public class GroupQuoteController {
         responseCode = "400",
         description = "Group quote not created",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "403",

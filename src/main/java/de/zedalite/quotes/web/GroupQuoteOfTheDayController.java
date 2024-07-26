@@ -34,6 +34,11 @@ public class GroupQuoteOfTheDayController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = QuoteResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Principal is no group member",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))

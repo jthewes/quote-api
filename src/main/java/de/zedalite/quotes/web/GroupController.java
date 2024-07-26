@@ -51,6 +51,11 @@ public class GroupController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = GroupResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Group retrieval not allowed",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -62,6 +67,7 @@ public class GroupController {
       ),
     }
   )
+  @PreAuthorize("@authorizer.isGroupMember(principal,#id)")
   @GetMapping("{id}")
   public ResponseEntity<GroupResponse> getGroup(@PathVariable("id") final Integer id) {
     return ResponseEntity.ok(service.find(id));
@@ -79,6 +85,11 @@ public class GroupController {
           mediaType = "application/json",
           array = @ArraySchema(schema = @Schema(implementation = GroupResponse.class))
         )
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "403",
@@ -111,6 +122,11 @@ public class GroupController {
         responseCode = "400",
         description = "Group not created",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "403",
@@ -148,6 +164,11 @@ public class GroupController {
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
       ),
       @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
+      ),
+      @ApiResponse(
         responseCode = "403",
         description = "Group entry not allowed",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
@@ -181,6 +202,11 @@ public class GroupController {
         responseCode = "400",
         description = "Request not valid",
         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
+      ),
+      @ApiResponse(
+        responseCode = "401",
+        description = "Unauthenticated",
+        content = @Content(mediaType = "application/json")
       ),
       @ApiResponse(
         responseCode = "403",
