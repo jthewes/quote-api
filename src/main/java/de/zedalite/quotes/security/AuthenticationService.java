@@ -1,6 +1,5 @@
 package de.zedalite.quotes.security;
 
-import static de.zedalite.quotes.data.model.UserAuthorityRole.GUEST;
 import static de.zedalite.quotes.data.model.UserAuthorityRole.MEMBER;
 
 import de.zedalite.quotes.data.model.User;
@@ -28,8 +27,10 @@ public class AuthenticationService {
       final User user = userRepository.findByName(username);
       return new UserPrincipal(user, List.of(new SimpleGrantedAuthority(ROLE_PREFIX + MEMBER)));
     } catch (final UserNotFoundException e) {
-      final User user = new User(0, username, "-", username.toUpperCase(), LocalDateTime.now());
-      return new UserPrincipal(user, List.of(new SimpleGrantedAuthority(ROLE_PREFIX + GUEST))); // guest account
+      // TODO create new user
+
+      final User user = new User(0, username, username.toUpperCase(), LocalDateTime.now());
+      return new UserPrincipal(user, List.of(new SimpleGrantedAuthority(ROLE_PREFIX + MEMBER))); // guest account
     }
   }
 }

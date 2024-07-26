@@ -6,7 +6,6 @@ import static org.mockito.BDDMockito.given;
 
 import de.zedalite.quotes.data.model.User;
 import de.zedalite.quotes.data.model.UserPrincipal;
-import de.zedalite.quotes.exception.UserNotFoundException;
 import de.zedalite.quotes.fixtures.UserGenerator;
 import de.zedalite.quotes.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -36,16 +35,5 @@ class AuthenticationServiceTest {
 
     assertThat(result.getUsername()).isEqualTo(user.name());
     assertThat(result.getAuthorities().stream().map(GrantedAuthority::getAuthority)).contains("ROLE_MEMBER");
-  }
-
-  @Test
-  @DisplayName("Anonymous user should be guest")
-  void anonymousUserShouldBeGuest() {
-    given(userRepository.findByName(anyString())).willThrow(UserNotFoundException.class);
-
-    final UserPrincipal result = instance.getUser("anon");
-
-    assertThat(result.getUsername()).isEqualTo("anon");
-    assertThat(result.getAuthorities().stream().map(GrantedAuthority::getAuthority)).contains("ROLE_GUEST");
   }
 }

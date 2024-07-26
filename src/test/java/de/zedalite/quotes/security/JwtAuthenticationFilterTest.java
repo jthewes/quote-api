@@ -49,7 +49,6 @@ class JwtAuthenticationFilterTest {
   @DisplayName("Should allow valid token")
   void shouldAllowValidToken() throws Exception {
     given(request.getHeader(AUTHORIZATION)).willReturn("Bearer jwtToken");
-    given(request.getRemoteAddr()).willReturn("127.0.0.1");
     given(jwtTokenService.validateToken(anyString())).willReturn("validTestUser");
     given(userDetailsService.loadUserByUsername(anyString())).willReturn(UserGenerator.getUserPrincipal());
 

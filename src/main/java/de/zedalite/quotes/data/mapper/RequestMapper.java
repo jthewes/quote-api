@@ -16,12 +16,12 @@ public interface RequestMapper {
   @Mapping(target = "uri", source = "request.requestURI")
   @Mapping(target = "query", source = "request.queryString", qualifiedByName = "mapQuery")
   @Mapping(target = "client", source = "request", qualifiedByName = "mapClient")
-  RequestLog map(final HttpServletRequest request, final Integer status, final String user, final Long time);
+  RequestLog mapRequest(final HttpServletRequest request, final Integer status, final String user, final Long time);
 
   @Mapping(target = "uri", source = "request.requestURI")
   @Mapping(target = "query", source = "request.queryString", qualifiedByName = "mapQuery")
   @Mapping(target = "client", source = "request", qualifiedByName = "mapClient")
-  AuthLog map(final HttpServletRequest request, final String status, final String user);
+  AuthLog mapAuth(final HttpServletRequest request, final String status, final String user, final String reason);
 
   @Named("mapClient")
   default String mapClient(final HttpServletRequest request) {

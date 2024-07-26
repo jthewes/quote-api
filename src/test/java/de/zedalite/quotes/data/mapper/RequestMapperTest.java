@@ -24,50 +24,50 @@ class RequestMapperTest {
   private HttpServletRequest request;
 
   @Test
-  @DisplayName("Should map request log")
-  void shouldMapRequestLog() {
+  @DisplayName("Should mapRequest request log")
+  void shouldMapRequestRequestLog() {
     given(request.getRequestURI()).willReturn("/quotes");
     given(request.getQueryString()).willReturn("filter=ASC");
     given(request.getHeader("X-Forwarded-For")).willReturn("10.0.0.2");
     given(request.getRemoteAddr()).willReturn("10.0.0.9");
 
-    final RequestLog result = instance.map(request, 200, "user", 1L);
+    final RequestLog result = instance.mapRequest(request, 200, "user", 1L);
 
     assertThat(result).isNotNull();
   }
 
   @Test
-  @DisplayName("Should map empty request log")
-  void shouldMapEmptyRequestLog() {
-    final RequestLog result = instance.map(null, null, null, null);
+  @DisplayName("Should mapRequest empty request log")
+  void shouldMapRequestEmptyRequestLog() {
+    final RequestLog result = instance.mapRequest(null, null, null, null);
 
     assertThat(result).isNull();
   }
 
   @Test
-  @DisplayName("Should map auth log")
-  void shouldMapAuthLog() {
+  @DisplayName("Should mapRequest auth log")
+  void shouldMapRequestAuthLog() {
     given(request.getRequestURI()).willReturn("/quotes");
     given(request.getQueryString()).willReturn("filter=ASC");
     given(request.getHeader("X-Forwarded-For")).willReturn("10.0.0.2");
     given(request.getRemoteAddr()).willReturn("10.0.0.9");
 
-    final AuthLog result = instance.map(request, "SUCCESS", "user");
+    final AuthLog result = instance.mapAuth(request, "SUCCESS", "user", "success");
 
     assertThat(result).isNotNull();
   }
 
   @Test
-  @DisplayName("Should map empty auth log")
-  void shouldMapEmptyAuthLog() {
-    final AuthLog result = instance.map(null, null, null);
+  @DisplayName("Should mapRequest empty auth log")
+  void shouldMapRequestEmptyAuthLog() {
+    final AuthLog result = instance.mapAuth(null, null, null, null);
 
     assertThat(result).isNull();
   }
 
   @Test
-  @DisplayName("Should map client")
-  void shouldMapClient() {
+  @DisplayName("Should mapRequest client")
+  void shouldMapRequestClient() {
     given(request.getHeader("X-Forwarded-For")).willReturn("10.0.0.2");
     given(request.getRemoteAddr()).willReturn("10.0.0.9");
 
@@ -77,8 +77,8 @@ class RequestMapperTest {
   }
 
   @Test
-  @DisplayName("Should map client when X-Forwarded-Header is empty")
-  void shouldMapClientWhenXForwardedHeaderIsEmpty() {
+  @DisplayName("Should mapRequest client when X-Forwarded-Header is empty")
+  void shouldMapRequestClientWhenXForwardedHeaderIsEmpty() {
     given(request.getHeader("X-Forwarded-For")).willReturn(null);
     given(request.getRemoteAddr()).willReturn("10.0.0.9");
 
@@ -88,8 +88,8 @@ class RequestMapperTest {
   }
 
   @Test
-  @DisplayName("Should map query")
-  void shouldMapQuery() {
+  @DisplayName("Should mapRequest query")
+  void shouldMapRequestQuery() {
     final String query = "filter=ASC";
 
     final String result = instance.mapQuery(query);
@@ -98,10 +98,10 @@ class RequestMapperTest {
   }
 
   @ParameterizedTest
-  @DisplayName("Should map empty query")
+  @DisplayName("Should mapRequest empty query")
   @NullSource
   @EmptySource
-  void shouldMapEmptyQuery(final String query) {
+  void shouldMapRequestEmptyQuery(final String query) {
     final String result = instance.mapQuery(query);
 
     assertThat(result).isBlank();

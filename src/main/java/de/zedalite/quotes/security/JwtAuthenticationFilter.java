@@ -53,13 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           userDetails.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String authMessage = REQUEST_MAPPER.map(request, "SUCCESS", username).toString();
-        LOGGER.debug(authMessage);
       } catch (final JWTVerificationException ex) {
-        final String authMessage = REQUEST_MAPPER.map(request, "FAIL", "anon").toString();
+        final String authMessage = REQUEST_MAPPER.mapAuth(request, "FAIL", "anon", "invalidToken").toString();
         LOGGER.info(authMessage);
-        filterChain.doFilter(request, response);
-        return;
       }
     }
     filterChain.doFilter(request, response);

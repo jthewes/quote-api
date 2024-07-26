@@ -39,7 +39,12 @@ public class RequestLogger implements HandlerInterceptor {
     final long executeTime = endTime - startTime;
     final String username = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "anon";
 
-    final String requestMessage = REQUEST_MAPPER.map(request, response.getStatus(), username, executeTime).toString();
+    final String requestMessage = REQUEST_MAPPER.mapRequest(
+      request,
+      response.getStatus(),
+      username,
+      executeTime
+    ).toString();
     LOGGER.info(requestMessage);
   }
 }
