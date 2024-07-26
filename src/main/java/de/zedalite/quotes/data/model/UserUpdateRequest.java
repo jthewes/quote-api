@@ -10,8 +10,6 @@ import jakarta.validation.constraints.Size;
 public record UserUpdateRequest(
   @Schema(description = "Name", example = "scott") @Size(max = 32) String name,
 
-  @Schema(description = "Email address", example = "me@scott.com") @Size(max = 64) String email,
-
   @Schema(description = "Visual presentation of the name", example = "The real Scott")
   @Size(max = 32)
   String displayName

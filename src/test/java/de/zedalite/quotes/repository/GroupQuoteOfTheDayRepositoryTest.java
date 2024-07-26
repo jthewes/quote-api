@@ -39,7 +39,7 @@ class GroupQuoteOfTheDayRepositoryTest extends TestEnvironmentProvider {
 
   @BeforeAll
   void setup() {
-    Integer exampleUserId = userRepository.save(new UserRequest("qotd_user", "qotd_user", "QOTD_USER")).id();
+    Integer exampleUserId = userRepository.save(new UserRequest("qotd_user", "QOTD_USER")).id();
     exampleGroupId = groupRepository.save(new GroupRequest("qotd_group", "QOTD"), exampleUserId).id();
     exampleQuoteId = groupQuoteRepository
       .save(exampleGroupId, new QuoteRequest("qotd", "I'm the best", LocalDateTime.now(), null), exampleUserId)

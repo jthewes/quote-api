@@ -67,7 +67,7 @@ class GroupMapperTest {
   @DisplayName("Should map group to response")
   void shouldMapGroupToResponse() {
     final Group group = new Group(0, "group", "GROUP", LocalDateTime.MIN, Optional.of(1));
-    final User creator = new User(1, "user", "user@email.net", "USER", LocalDateTime.MIN);
+    final User creator = new User(1, "user", "USER", LocalDateTime.MIN);
 
     final GroupResponse result = instance.mapToResponse(group, creator);
 

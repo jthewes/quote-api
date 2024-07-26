@@ -112,12 +112,10 @@ class UserServiceTest {
     given(repository.findById(anyInt())).willReturn(user);
     given(repository.update(anyInt(), any(UserUpdateRequest.class))).willReturn(updatedUser);
     given(user.name()).willReturn("name");
-    given(user.email()).willReturn("email");
     given(user.displayName()).willReturn("displayName");
     given(updatedUser.name()).willReturn("newName");
     given(updatedUser.displayName()).willReturn("newDisplayName");
     given(request.name()).willReturn("newName");
-    given(request.email()).willReturn("newEmail");
     given(request.displayName()).willReturn("newDisplayName");
 
     final UserResponse result = instance.update(user.id(), request);
@@ -139,10 +137,8 @@ class UserServiceTest {
     given(repository.isUsernameTaken(anyString())).willReturn(false);
     given(repository.findById(anyInt())).willReturn(user);
     given(user.name()).willReturn("name");
-    given(user.email()).willReturn("email");
     given(user.displayName()).willReturn("displayName");
     given(request.name()).willReturn("newName");
-    given(request.email()).willReturn("newEmail");
     given(request.displayName()).willReturn("newDisplayName");
     given(repository.update(anyInt(), any(UserUpdateRequest.class))).willThrow(UserNotFoundException.class);
 

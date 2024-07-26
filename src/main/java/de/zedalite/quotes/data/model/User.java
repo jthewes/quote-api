@@ -13,8 +13,6 @@ public record User(
 
   @Schema(description = "Unique name", example = "scott") @NotBlank @Size(max = 32) String name,
 
-  @Schema(description = "Email address", example = "me@scott.com") @NotBlank @Size(max = 64) String email,
-
   @Schema(description = "Visual presentation of the name", example = "The real Scott")
   @NotBlank
   @Size(max = 32)

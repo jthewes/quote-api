@@ -52,7 +52,6 @@ public class UserService {
 
       final UserUpdateRequest updateRequest = new UserUpdateRequest(
         Objects.requireNonNullElse(request.name(), user.name()),
-        Objects.requireNonNullElse(request.email(), user.email()),
         Objects.requireNonNullElse(request.displayName(), user.displayName())
       ); // only update updated fields
 

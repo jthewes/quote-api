@@ -51,6 +51,6 @@ public class QuoteGenerator {
   }
 
   private static List<User> getMentions() {
-    return List.of(new User(12, "mentionedUser", "secret555", "mentionedUser", LocalDateTime.MIN));
+    return List.of(new User(12, "mentionedUser", "mentionedUser", LocalDateTime.MIN));
   }
 }

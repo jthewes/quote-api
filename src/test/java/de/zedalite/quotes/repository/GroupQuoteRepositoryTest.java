@@ -45,7 +45,7 @@ class GroupQuoteRepositoryTest extends TestEnvironmentProvider {
 
   @BeforeAll
   void setup() {
-    userId = userRepository.save(new UserRequest("qg", "test", "Quote Group")).id();
+    userId = userRepository.save(new UserRequest("qg", "Quote Group")).id();
     groupId = groupRepository.save(new GroupRequest("quoter-group", "QuoterG"), userId).id();
     instance.save(groupId, QuoteGenerator.getQuoteRequest(), userId);
   }

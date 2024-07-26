@@ -39,7 +39,7 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   //TODO refactor Usergenerator with random usersnames
   @BeforeAll
   void setup() {
-    userId = userRepository.save(new UserRequest("grouper", "test", "Grouper")).id();
+    userId = userRepository.save(new UserRequest("grouper", "Grouper")).id();
     groupId = groupRepository.save(new GroupRequest("groupers-group", "Groupers"), userId).id();
     final GroupMemberRequest request = new GroupMemberRequest(userId, "GROUPER");
     instance.save(groupId, request);
@@ -48,7 +48,7 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should save group member")
   void shouldSaveGroupMember() {
-    final Integer newUserId = userRepository.save(new UserRequest("real operator", "op", "Real Operator")).id();
+    final Integer newUserId = userRepository.save(new UserRequest("real operator", "Real Operator")).id();
     final Integer newGroupId = groupRepository.save(new GroupRequest("random-group", "sfsfefs"), userId).id();
     final GroupMemberRequest request = new GroupMemberRequest(newUserId, "REAL OPERATOR");
 
@@ -87,7 +87,7 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should update group member")
   void shouldUpdateGroupMember() {
-    final Integer newUserId = userRepository.save(new UserRequest("update me", "update@email.me", "me")).id();
+    final Integer newUserId = userRepository.save(new UserRequest("update me", "me")).id();
     final GroupMemberRequest memberRequest = new GroupMemberRequest(newUserId, "UPDATE me");
     instance.save(groupId, memberRequest);
 
@@ -101,7 +101,7 @@ class GroupMemberRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should delete group member")
   void shouldDeleteGroupMember() {
-    final Integer newUserId = userRepository.save(new UserRequest("operator", "op", "Operator")).id();
+    final Integer newUserId = userRepository.save(new UserRequest("operator", "Operator")).id();
     final Integer newGroupId = groupRepository.save(new GroupRequest("new-group", "NewGr"), userId).id();
     final GroupMemberRequest request = new GroupMemberRequest(newUserId, "OPERATOR");
     instance.save(newGroupId, request);

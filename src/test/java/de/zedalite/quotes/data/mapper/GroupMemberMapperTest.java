@@ -64,7 +64,7 @@ class GroupMemberMapperTest {
   @Test
   @DisplayName("Should map group member and displayname to response")
   void shouldMapGroupMemberAndDisplaynameToResponse() {
-    final User user = new User(0, "username", "user@email.net", "User", LocalDateTime.MIN);
+    final User user = new User(0, "username", "User", LocalDateTime.MIN);
     final String displayName = "cat";
 
     final GroupMemberResponse groupMemberResponse = instance.mapToResponse(user, displayName);

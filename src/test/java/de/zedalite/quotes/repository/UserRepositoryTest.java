@@ -28,20 +28,19 @@ class UserRepositoryTest extends TestEnvironmentProvider {
 
   @BeforeAll
   void setup() {
-    instance.save(new UserRequest("repoTester", "email@test.com", "Repo Tester"));
+    instance.save(new UserRequest("repoTester", "Repo Tester"));
   }
 
   @Test
   @DisplayName("Should save user")
   void shouldSaveUser() {
-    final UserRequest user = new UserRequest("newuser", "email@test.com", "New User");
+    final UserRequest user = new UserRequest("newuser", "New User");
 
     final User savedUser = instance.save(user);
 
     assertThat(savedUser).isNotNull();
     assertThat(savedUser.id()).isNotNull();
     assertThat(savedUser.name()).isEqualTo("newuser");
-    assertThat(savedUser.email()).isEqualTo("email@test.com");
   }
 
   @Test
@@ -82,20 +81,19 @@ class UserRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should update user")
   void shouldUpdateUser() {
-    final Integer userId = instance.save(new UserRequest("super", "email@test.com", "Super")).id();
-    final UserUpdateRequest request = new UserUpdateRequest("mega", "email@test.com", "MEGA");
+    final Integer userId = instance.save(new UserRequest("super", "Super")).id();
+    final UserUpdateRequest request = new UserUpdateRequest("mega", "MEGA");
 
     final User updatedUser = instance.update(userId, request);
 
     assertThat(updatedUser.id()).isEqualTo(userId);
-    assertThat(updatedUser.email()).isEqualTo("email@test.com");
     assertThat(updatedUser.displayName()).isEqualTo("MEGA");
   }
 
   @Test
   @DisplayName("Should return true when username is taken")
   void shouldReturnTrueWhenUsernameIsTaken() {
-    instance.save(new UserRequest("definitelyTaken", "taken", "Taken User"));
+    instance.save(new UserRequest("definitelyTaken", "Taken User"));
 
     final boolean isTaken = instance.isUsernameTaken("definitelyTaken");
 
@@ -113,7 +111,7 @@ class UserRepositoryTest extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should return false when username is already taken")
   void shouldReturnFalseWhenUsernameIsAlreadyTaken() {
-    instance.save(new UserRequest("takenName", "taken", "Taken Name"));
+    instance.save(new UserRequest("takenName", "Taken Name"));
 
     final boolean isAvailable = instance.isUsernameAvailable("takenName");
 

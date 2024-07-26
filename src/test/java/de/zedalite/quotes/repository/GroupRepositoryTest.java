@@ -31,8 +31,8 @@ class GroupRepositoryTest extends TestEnvironmentProvider {
 
   @BeforeAll
   void setup() {
-    final Integer userId = userRepository.save(new UserRequest("grouptester", "test", "Group Tester")).id();
-    final Integer userId2 = userRepository.save(new UserRequest("grouptester2", "test2", "Group Tester 2")).id();
+    final Integer userId = userRepository.save(new UserRequest("grouptester", "Group Tester")).id();
+    final Integer userId2 = userRepository.save(new UserRequest("grouptester2", "Group Tester 2")).id();
 
     instance.save(new GroupRequest("test-group", "TESTGR"), userId);
     instance.save(new GroupRequest("best-quoter", "BstQtr"), userId2);

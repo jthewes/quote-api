@@ -45,7 +45,6 @@ public class UserRepository {
     final Optional<UsersRecord> savedUser = dsl
       .insertInto(USERS)
       .set(USERS.NAME, user.name())
-      .set(USERS.EMAIL, user.email())
       .set(USERS.CREATION_DATE, LocalDateTime.now())
       .set(USERS.DISPLAY_NAME, user.displayName())
       .returning()
@@ -79,7 +78,6 @@ public class UserRepository {
     final Optional<UsersRecord> updatedUser = dsl
       .update(USERS)
       .set(USERS.NAME, user.name())
-      .set(USERS.EMAIL, user.email())
       .set(USERS.DISPLAY_NAME, user.displayName())
       .where(USERS.ID.eq(id))
       .returning()

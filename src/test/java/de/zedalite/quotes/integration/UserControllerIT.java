@@ -51,7 +51,7 @@ class UserControllerIT extends TestEnvironmentProvider {
   @Test
   @DisplayName("Should return BAD_REQUEST")
   void shouldReturnBadRequest() throws Exception {
-    final UserRequest userRequest = new UserRequest("a".repeat(128), "test@test.de", "AAA");
+    final UserRequest userRequest = new UserRequest("a".repeat(128), "AAA");
 
     mockMvc
       .perform(post("/users").contentType(APPLICATION_JSON).content(objectMapper.writeValueAsString(userRequest)))

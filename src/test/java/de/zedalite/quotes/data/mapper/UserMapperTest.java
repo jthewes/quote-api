@@ -19,14 +19,13 @@ class UserMapperTest {
   @Test
   @DisplayName("Should map userRecord to user")
   void shouldMapUserRecordToUser() {
-    final UsersRecord userRec = new UsersRecord(0, "user", "email@email.net", "USER", LocalDateTime.MIN);
+    final UsersRecord userRec = new UsersRecord(0, "user", "USER", LocalDateTime.MIN);
 
     final User user = instance.mapToUser(userRec);
 
     assertThat(user).isNotNull();
     assertThat(user.id()).isEqualTo(userRec.getId());
     assertThat(user.name()).isEqualTo(userRec.getName());
-    assertThat(user.email()).isEqualTo(userRec.getEmail());
     assertThat(user.creationDate()).isEqualTo(userRec.getCreationDate());
     assertThat(user.displayName()).isEqualTo(userRec.getDisplayName());
   }
