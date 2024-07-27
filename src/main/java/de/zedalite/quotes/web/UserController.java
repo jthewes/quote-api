@@ -24,43 +24,6 @@ public class UserController {
   }
 
   @Operation(
-    summary = "Create a new user",
-    description = "Create a new user",
-    operationId = "createUser",
-    responses = {
-      @ApiResponse(
-        responseCode = "200",
-        description = "Users created",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))
-      ),
-      @ApiResponse(
-        responseCode = "400",
-        description = "Users not created",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-      ),
-      @ApiResponse(
-        responseCode = "401",
-        description = "Unauthenticated",
-        content = @Content(mediaType = "application/json")
-      ),
-      @ApiResponse(
-        responseCode = "403",
-        description = "User creation not allowed",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-      ),
-      @ApiResponse(
-        responseCode = "404",
-        description = "User not found",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-      ),
-    }
-  )
-  @PostMapping
-  public ResponseEntity<UserResponse> create(@Valid @RequestBody final UserRequest user) {
-    return ResponseEntity.ok(service.create(user));
-  }
-
-  @Operation(
     summary = "Get your user details",
     description = "Get your user details",
     operationId = "getUser",

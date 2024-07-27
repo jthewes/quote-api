@@ -1,6 +1,7 @@
 package de.zedalite.quotes.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 import de.zedalite.quotes.TestEnvironmentProvider;
 import de.zedalite.quotes.data.jooq.quotes.tables.GroupQuotes;
@@ -8,6 +9,7 @@ import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.Quote;
 import de.zedalite.quotes.data.model.QuoteRequest;
 import de.zedalite.quotes.data.model.UserRequest;
+import de.zedalite.quotes.exception.QuoteNotFoundException;
 import de.zedalite.quotes.fixtures.QuoteGenerator;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +47,7 @@ class GroupQuoteRepositoryTest extends TestEnvironmentProvider {
 
   @BeforeAll
   void setup() {
-    userId = userRepository.save(new UserRequest("qg", "Quote Group")).id();
+    userId = userRepository.save("usr-479832", new UserRequest("Quote Group")).id();
     groupId = groupRepository.save(new GroupRequest("quoter-group", "QuoterG"), userId).id();
     instance.save(groupId, QuoteGenerator.getQuoteRequest(), userId);
   }
@@ -88,11 +90,23 @@ class GroupQuoteRepositoryTest extends TestEnvironmentProvider {
   }
 
   @Test
+  @DisplayName("Should throw exception when group quote not found")
+  void shouldThrowExceptionWhenGroupQuoteNotFound() {
+    assertThatCode(() -> instance.findById(groupId, 987654321)).isInstanceOf(QuoteNotFoundException.class);
+  }
+
+  @Test
   @DisplayName("Should find all group quotes")
   void shouldFindAllGroupQuotes() {
     final List<Quote> quotes = instance.findAll(groupId);
 
     assertThat(quotes).hasSizeGreaterThanOrEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("Should throw exception when no group quotes found")
+  void shouldThrowExceptionWhenNoGroupQuotesFound() {
+    assertThatCode(() -> instance.findAll(987654321)).isInstanceOf(QuoteNotFoundException.class);
   }
 
   @Test

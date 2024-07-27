@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public record User(
   @Schema(description = "Unique identifier", example = "5") @NotNull @PositiveOrZero Integer id,
 
-  @Schema(description = "Unique name", example = "scott") @NotBlank @Size(max = 32) String name,
+  @Schema(description = "Unique name", example = "usr-1657423234892438243") @NotBlank @Size(max = 32) String authId,
 
   @Schema(description = "Visual presentation of the name", example = "The real Scott")
   @NotBlank

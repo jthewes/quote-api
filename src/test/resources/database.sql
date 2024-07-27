@@ -239,7 +239,7 @@ ALTER TABLE quotes.quotes_of_the_day ALTER COLUMN id ADD GENERATED ALWAYS AS IDE
 
 CREATE TABLE users.users (
                              id integer NOT NULL,
-                             name character varying(32) NOT NULL,
+                             auth_id character varying(32) NOT NULL,
                              display_name character varying(32) NOT NULL,
                              creation_date timestamp without time zone DEFAULT '1970-01-01 00:00:00'::timestamp without time zone NOT NULL
 );
@@ -302,11 +302,11 @@ ALTER TABLE ONLY quotes.quotes
 
 
 --
--- Name: users users_name_key; Type: CONSTRAINT; Schema: users; Owner: quote
+-- Name: users users_auth_id_key; Type: CONSTRAINT; Schema: users; Owner: quote
 --
 
 ALTER TABLE ONLY users.users
-    ADD CONSTRAINT users_name_key UNIQUE (name);
+    ADD CONSTRAINT users_auth_id_key UNIQUE (auth_id);
 
 
 --

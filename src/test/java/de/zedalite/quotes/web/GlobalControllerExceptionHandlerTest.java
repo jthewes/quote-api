@@ -94,6 +94,15 @@ class GlobalControllerExceptionHandlerTest {
   }
 
   @Test
+  @DisplayName("Should handle authorization exception")
+  void shouldHandleAuthorizationException() {
+    final ErrorResponse errorResponse = instance.handleAuthorizationDeniedException().getBody();
+
+    assertThat(errorResponse).isNotNull();
+    assertThat(errorResponse.message()).isEqualTo("Access Denied");
+  }
+
+  @Test
   @DisplayName("Should handle unexpected RuntimeException")
   void shouldHandleUnexpectedRuntimeException() {
     final RuntimeException exception = new RuntimeException("Unexpected exception");

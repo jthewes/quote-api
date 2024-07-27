@@ -11,7 +11,7 @@
 
   <groupId>de.zedalite</groupId>
   <artifactId>quote-service</artifactId>
-  <version>1.14.0-SNAPSHOT</version>
+  <version>1.15.0-SNAPSHOT</version>
   <name>quote-service</name>
   <description>Quote Service - A RESTful API acting as a link between the frontend and the datasource.</description>
   <packaging>jar</packaging>
@@ -31,10 +31,12 @@
     <jwks-rsa.version>0.22.1</jwks-rsa.version>
     <mapstruct.version>1.6.0.Beta2</mapstruct.version>
     <springdoc-openapi-webmvc-ui.version>2.6.0</springdoc-openapi-webmvc-ui.version>
+    <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
     <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
     <owasp-plugin.version>10.0.3</owasp-plugin.version>
     <pitest.version>1.16.1</pitest.version>
     <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
+    <openapi-generator-plugin.version>7.7.0</openapi-generator-plugin.version>
     <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
     <prettier-maven-plugin.prettierJavaVersion>2.6.4</prettier-maven-plugin.prettierJavaVersion>
     <!-- Database -->
@@ -110,6 +112,14 @@
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${springdoc-openapi-webmvc-ui.version}</version>
     </dependency>
+    <!-- compile -->
+    <dependency>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>${jackson-databind-nullable.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -148,6 +158,13 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jooq</groupId>
         <artifactId>jooq-codegen-maven</artifactId>
         <version>${jooq.version}</version>
@@ -183,6 +200,31 @@
             </target>
           </generator>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/rest-specs/corbado-backend.yml</inputSpec>
+              <generatorName>java</generatorName>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <configOptions>
+                <library>restclient</library>
+                <invokerPackage>de.zedalite.auth.client</invokerPackage>
+                <apiPackage>de.zedalite.auth.client.api</apiPackage>
+                <modelPackage>de.zedalite.auth.client.model</modelPackage>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>com.hubspot.maven.plugins</groupId>

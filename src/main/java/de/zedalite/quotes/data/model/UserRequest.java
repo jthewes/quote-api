@@ -9,8 +9,6 @@ import jakarta.validation.constraints.Size;
 @JsonSerialize
 @JsonDeserialize
 public record UserRequest(
-  @Schema(description = "Unique name", example = "scott") @NotBlank @Size(max = 32) String name,
-
   @Schema(description = "Visual presentation of the name", example = "The real Scott")
   @NotBlank
   @Size(max = 32)

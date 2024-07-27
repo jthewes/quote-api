@@ -43,18 +43,6 @@ class UserControllerTest {
   }
 
   @Test
-  @DisplayName("Should create user")
-  void shouldCreateUser() {
-    final UserRequest userRequest = UserGenerator.getUserRequest();
-
-    final ResponseEntity<UserResponse> response = instance.create(userRequest);
-
-    then(service).should().create(userRequest);
-    assertThat(response).isNotNull();
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-  }
-
-  @Test
   @DisplayName("Should update user")
   void shouldUpdateUser() {
     final UserPrincipal principal = mock(UserPrincipal.class);

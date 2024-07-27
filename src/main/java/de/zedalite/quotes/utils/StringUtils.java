@@ -20,6 +20,10 @@ public final class StringUtils {
       .toList();
   }
 
+  public static String truncate(final String text, final int length) {
+    return text.length() > length ? text.substring(0, length) : text;
+  }
+
   private static Integer parseToInt(final String number) {
     try {
       return Integer.parseInt(number);

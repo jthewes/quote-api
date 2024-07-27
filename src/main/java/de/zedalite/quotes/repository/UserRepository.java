@@ -33,18 +33,11 @@ public class UserRepository {
     this.dsl = dsl;
   }
 
-  /**
-   * Saves a user to the database.
-   *
-   * @param user the user details to be saved
-   * @return the saved user
-   * @throws UserNotFoundException if the user is not found in the database
-   */
   @CachePut(value = "users", key = "#result.id()", unless = "#result == null")
-  public User save(final UserRequest user) throws UserNotFoundException {
+  public User save(final String authId, final UserRequest user) throws UserNotFoundException {
     final Optional<UsersRecord> savedUser = dsl
       .insertInto(USERS)
-      .set(USERS.NAME, user.name())
+      .set(USERS.AUTH_ID, authId)
       .set(USERS.CREATION_DATE, LocalDateTime.now())
       .set(USERS.DISPLAY_NAME, user.displayName())
       .returning()
@@ -53,11 +46,11 @@ public class UserRepository {
     return USER_MAPPER.mapToUser(savedUser.get());
   }
 
-  @Cacheable(value = "usernames", key = "#name", unless = "#result == null")
-  public User findByName(final String name) {
+  @Cacheable(value = "users_auth_ids", key = "#authId", unless = "#result == null")
+  public User findByAuthId(final String authId) {
     final Optional<UsersRecord> user = dsl
       .selectFrom(USERS)
-      .where(USERS.NAME.eq(name))
+      .where(USERS.AUTH_ID.eq(authId))
       .fetchOptionalInto(UsersRecord.class);
     if (user.isEmpty()) throw new UserNotFoundException(USER_NOT_FOUND);
     return USER_MAPPER.mapToUser(user.get());
@@ -77,7 +70,6 @@ public class UserRepository {
   public User update(final Integer id, final UserUpdateRequest user) throws UserNotFoundException {
     final Optional<UsersRecord> updatedUser = dsl
       .update(USERS)
-      .set(USERS.NAME, user.name())
       .set(USERS.DISPLAY_NAME, user.displayName())
       .where(USERS.ID.eq(id))
       .returning()
@@ -86,15 +78,11 @@ public class UserRepository {
     return USER_MAPPER.mapToUser(updatedUser.get());
   }
 
-  public boolean doesUserNonExist(final Integer id) {
+  public boolean doesUserExist(final Integer id) {
     return !dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.ID.eq(id)));
   }
 
-  public boolean isUsernameTaken(final String name) {
-    return dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.NAME.eq(name)));
-  }
-
-  public boolean isUsernameAvailable(final String name) {
-    return !dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.NAME.eq(name)));
+  public boolean doesAuthUserExist(final String authId) {
+    return dsl.fetchExists(dsl.selectFrom(USERS).where(USERS.AUTH_ID.eq(authId)));
   }
 }

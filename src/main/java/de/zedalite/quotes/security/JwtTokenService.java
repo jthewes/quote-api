@@ -20,13 +20,12 @@ public class JwtTokenService {
   ) {
     this.verifier = JWT.require(Algorithm.RSA256(repository.getKeyProvider()))
       .withIssuer(jwtIssuer.toArray(new String[0]))
-      .withClaimPresence("name")
-      .withClaimPresence("email")
+      .withClaimPresence("sub")
       .build();
   }
 
   public String validateToken(final String token) {
     final DecodedJWT jwt = verifier.verify(token);
-    return jwt.getClaim("name").asString();
+    return jwt.getClaim("sub").asString();
   }
 }

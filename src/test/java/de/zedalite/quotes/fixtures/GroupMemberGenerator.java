@@ -22,7 +22,7 @@ public class GroupMemberGenerator {
   }
 
   public static GroupMemberResponse getGroupMemberResponse() {
-    final UserResponse userResponse = new UserResponse(1, "tester", "TESTER", null);
+    final UserResponse userResponse = new UserResponse(1, "TESTER", null);
     return new GroupMemberResponse(userResponse, "KING OF THE WORLD");
   }
 }

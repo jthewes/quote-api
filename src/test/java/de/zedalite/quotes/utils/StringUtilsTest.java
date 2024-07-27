@@ -44,4 +44,37 @@ class StringUtilsTest {
 
     assertThat(userIds).isEmpty();
   }
+
+  @Test
+  @DisplayName("Should truncate string longer than specified length")
+  void shouldTruncateStringLongerThanSpecifiedLength() {
+    final String text = "The quick brown fox jumps over the lazy dog.";
+    final int length = 10;
+
+    final String result = StringUtils.truncate(text, length);
+
+    assertThat(result).isEqualTo("The quick ");
+  }
+
+  @Test
+  @DisplayName("Should not truncate string equal to specified length")
+  void shouldNotTruncateStringEqualToSpecifiedLength() {
+    final String text = "The quick";
+    final int length = 9;
+
+    final String result = StringUtils.truncate(text, length);
+
+    assertThat(result).isEqualTo(text);
+  }
+
+  @Test
+  @DisplayName("Should handle empty string")
+  void shouldHandleEmptyString() {
+    final String text = "";
+    final int length = 10;
+
+    final String result = StringUtils.truncate(text, length);
+
+    assertThat(result).isEqualTo(text);
+  }
 }

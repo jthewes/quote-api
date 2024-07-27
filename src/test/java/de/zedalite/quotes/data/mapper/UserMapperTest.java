@@ -25,7 +25,7 @@ class UserMapperTest {
 
     assertThat(user).isNotNull();
     assertThat(user.id()).isEqualTo(userRec.getId());
-    assertThat(user.name()).isEqualTo(userRec.getName());
+    assertThat(user.authId()).isEqualTo(userRec.getAuthId());
     assertThat(user.creationDate()).isEqualTo(userRec.getCreationDate());
     assertThat(user.displayName()).isEqualTo(userRec.getDisplayName());
   }

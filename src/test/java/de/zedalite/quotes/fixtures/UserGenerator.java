@@ -9,16 +9,12 @@ public class UserGenerator {
 
   // TODO replace test fixures with mocks in test for better extensibility
 
-  public static UserRequest getUserRequest() {
-    return new UserRequest("tester", "The Tester");
-  }
-
   public static User getUser() {
     return new User(1, "tester", "TESTER", LocalDateTime.now());
   }
 
   public static UserResponse getUserResponse() {
-    return new UserResponse(1, "tester", "TESTER", LocalDateTime.now());
+    return new UserResponse(1, "Tester", LocalDateTime.now());
   }
 
   public static UserPrincipal getUserPrincipal() {

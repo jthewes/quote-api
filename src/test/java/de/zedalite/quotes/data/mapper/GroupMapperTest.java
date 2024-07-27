@@ -80,7 +80,6 @@ class GroupMapperTest {
     assertThat(result.creator()).isPresent().isNotNull();
     final UserResponse reponseCreator = result.creator().get();
     assertThat(reponseCreator.id()).isEqualTo(1);
-    assertThat(reponseCreator.name()).isEqualTo("user");
     assertThat(reponseCreator.displayName()).isEqualTo("USER");
     assertThat(reponseCreator.creationDate()).isEqualTo(LocalDateTime.MIN);
   }

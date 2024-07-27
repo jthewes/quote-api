@@ -16,7 +16,7 @@ public record UserPrincipal(User user, Collection<? extends GrantedAuthority> au
 
   @Override
   public String getUsername() {
-    return user.name();
+    return user.authId();
   }
 
   @Override
