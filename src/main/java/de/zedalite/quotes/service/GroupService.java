@@ -95,7 +95,15 @@ public class GroupService {
   }
 
   public GroupResponse update(final Integer id, final GroupUpdateRequest request) {
-    // TODO: Add validation for unique invite code
+    if (request.inviteCode() != null) {
+      try {
+        repository.findByCode(request.inviteCode());
+        throw new ResourceAlreadyExitsException("Invite code already exists");
+      } catch (final GroupNotFoundException ex) {
+        // do nothing
+      }
+    }
+
     try {
       final Group group = repository.findById(id);
 

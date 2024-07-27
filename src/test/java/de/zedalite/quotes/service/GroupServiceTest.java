@@ -211,6 +211,7 @@ class GroupServiceTest {
     final Group updatedGroup = mock(Group.class);
     final GroupUpdateRequest groupRequest = mock(GroupUpdateRequest.class);
 
+    given(groupRepository.findByCode(anyString())).willThrow(GroupNotFoundException.class);
     given(groupRepository.findById(anyInt())).willReturn(group);
     given(groupRepository.update(anyInt(), any(GroupUpdateRequest.class))).willReturn(updatedGroup);
     given(group.displayName()).willReturn("TestGroup");
@@ -227,6 +228,19 @@ class GroupServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.group().displayName()).isEqualTo("NewName");
     assertThat(result.group().inviteCode()).isEqualTo("NewCode");
+  }
+
+  @Test
+  @DisplayName("Should throw exception when group code is already taken")
+  void shouldThrowExceptionWhenGroupCodeIsAlreadyTaken() {
+    final Group group = mock(Group.class);
+    final GroupUpdateRequest groupRequest = mock(GroupUpdateRequest.class);
+
+    given(groupRequest.inviteCode()).willReturn("takenCode");
+    given(groupRepository.findByCode(anyString())).willReturn(group);
+
+    final int groupId = group.id();
+    assertThatCode(() -> instance.update(groupId, groupRequest)).isInstanceOf(ResourceAlreadyExitsException.class);
   }
 
   @Test
