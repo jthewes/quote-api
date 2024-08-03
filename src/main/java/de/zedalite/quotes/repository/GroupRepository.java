@@ -70,10 +70,9 @@ public class GroupRepository {
   }
 
   @Caching(
-    cacheable = @Cacheable(value = "groups", key = "#id", unless = "#result == null"),
+    put = @CachePut(value = "groups", key = "#id", unless = "#result == null"),
     evict = @CacheEvict(value = "groupcodes", allEntries = true)
   )
-  @Cacheable(value = "groups", key = "#id", unless = "#result == null")
   public Group update(final Integer id, final GroupUpdateRequest request) {
     final Optional<GroupsRecord> updatedGroup = dsl
       .update(GROUPS)

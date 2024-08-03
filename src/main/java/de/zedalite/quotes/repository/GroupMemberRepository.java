@@ -25,6 +25,7 @@ public class GroupMemberRepository {
   private static final GroupMemberMapper GROUP_MEMBER_MAPPER = GroupMemberMapper.INSTANCE;
   private static final Groups GROUPS = Groups.GROUPS.as("groups");
   private static final GroupMembers GROUP_MEMBER = GroupMembers.GROUP_MEMBERS.as("group_members");
+  private static final String GROUP_NOT_FOUND = "Group not found";
   private static final String GROUP_MEMBER_NOT_FOUND = "Group member not found";
 
   private final DSLContext dsl;
@@ -84,7 +85,7 @@ public class GroupMemberRepository {
       .from(GROUP_MEMBER.join(GROUPS).on(GROUP_MEMBER.GROUP_ID.eq(GROUPS.ID)))
       .where(GROUP_MEMBER.USER_ID.eq(userId))
       .fetchInto(Group.class);
-    if (groups.isEmpty()) throw new GroupNotFoundException(GROUP_MEMBER_NOT_FOUND);
+    if (groups.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
     return groups;
   }
 
