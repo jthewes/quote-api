@@ -47,7 +47,9 @@ public class SecurityConfiguration {
       )
       .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
       .exceptionHandling(exceptHandler ->
-        exceptHandler.authenticationEntryPoint((request, response, authException) -> response.sendError(HttpStatus.UNAUTHORIZED.value()))
+        exceptHandler.authenticationEntryPoint((request, response, authException) ->
+          response.sendError(HttpStatus.UNAUTHORIZED.value())
+        )
       );
     return http.build();
   }
