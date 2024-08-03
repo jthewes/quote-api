@@ -95,7 +95,7 @@ public class GroupService {
   }
 
   public GroupResponse update(final Integer id, final GroupUpdateRequest request) {
-    if (request.inviteCode() != null && request.inviteCode().isBlank()) {
+    if (request.inviteCode() != null && !request.inviteCode().isBlank()) {
       try {
         repository.findByCode(request.inviteCode());
         throw new ResourceAlreadyExitsException("Invite code already exists");
