@@ -1,19 +1,21 @@
 package de.zedalite.quotes.repository;
 
-import de.zedalite.quotes.data.jooq.tables.Groups;
-import de.zedalite.quotes.data.jooq.tables.records.GroupsRecord;
+import de.zedalite.quotes.data.jooq.quotes.tables.Groups;
+import de.zedalite.quotes.data.jooq.quotes.tables.records.GroupsRecord;
 import de.zedalite.quotes.data.mapper.GroupMapper;
 import de.zedalite.quotes.data.model.Group;
 import de.zedalite.quotes.data.model.GroupRequest;
-import de.zedalite.quotes.exceptions.GroupNotFoundException;
-import de.zedalite.quotes.exceptions.QuoteNotFoundException;
+import de.zedalite.quotes.data.model.GroupUpdateRequest;
+import de.zedalite.quotes.exception.GroupNotFoundException;
+import de.zedalite.quotes.exception.QuoteNotFoundException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import org.jooq.DSLContext;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Provides methods for interacting with the database to perform CRUD operations on quotes.
@@ -34,12 +36,13 @@ public class GroupRepository {
   }
 
   @CachePut(value = "groups", key = "#result.id()", unless = "#result == null")
-  public Group save(final GroupRequest group) throws QuoteNotFoundException {
-    final Optional<GroupsRecord> savedGroup = dsl.insertInto(GROUPS)
-      .set(GROUPS.NAME, group.name())
+  public Group save(final GroupRequest group, final Integer creatorId) throws QuoteNotFoundException {
+    final Optional<GroupsRecord> savedGroup = dsl
+      .insertInto(GROUPS)
+      .set(GROUPS.INVITE_CODE, group.inviteCode())
       .set(GROUPS.DISPLAY_NAME, group.displayName())
-      .set(GROUPS.CREATION_DATE, group.creationDate())
-      .set(GROUPS.CREATOR_ID, group.creatorId())
+      .set(GROUPS.CREATION_DATE, LocalDateTime.now())
+      .set(GROUPS.CREATOR_ID, creatorId)
       .returning()
       .fetchOptionalInto(GroupsRecord.class);
     if (savedGroup.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
@@ -48,25 +51,37 @@ public class GroupRepository {
 
   @Cacheable(value = "groups", key = "#id", unless = "#result == null")
   public Group findById(final Integer id) throws GroupNotFoundException {
-    final Optional<GroupsRecord> group = dsl.selectFrom(GROUPS)
+    final Optional<GroupsRecord> group = dsl
+      .selectFrom(GROUPS)
       .where(GROUPS.ID.eq(id))
       .fetchOptionalInto(GroupsRecord.class);
     if (group.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
     return GROUP_MAPPER.mapToGroup(group.get());
   }
 
-  public List<Group> findAll() {
-    final List<GroupsRecord> groups = dsl.selectFrom(GROUPS)
-      .fetchInto(GroupsRecord.class);
-    if (groups.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
-    return GROUP_MAPPER.mapToGroups(groups);
+  @Cacheable(value = "groupcodes", key = "#code", unless = "#result == null")
+  public Group findByCode(final String code) {
+    final Optional<GroupsRecord> group = dsl
+      .selectFrom(GROUPS)
+      .where(GROUPS.INVITE_CODE.eq(code))
+      .fetchOptionalInto(GroupsRecord.class);
+    if (group.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
+    return GROUP_MAPPER.mapToGroup(group.get());
   }
 
-  public List<Integer> findAllIds() {
-    final List<Integer> ids = dsl.select(GROUPS.ID)
-      .from(GROUPS)
-      .fetchInto(Integer.class);
-    if (ids.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
-    return ids;
+  @Caching(
+    put = @CachePut(value = "groups", key = "#id", unless = "#result == null"),
+    evict = @CacheEvict(value = "groupcodes", allEntries = true)
+  )
+  public Group update(final Integer id, final GroupUpdateRequest request) {
+    final Optional<GroupsRecord> updatedGroup = dsl
+      .update(GROUPS)
+      .set(GROUPS.DISPLAY_NAME, request.displayName())
+      .set(GROUPS.INVITE_CODE, request.inviteCode())
+      .where(GROUPS.ID.eq(id))
+      .returning()
+      .fetchOptionalInto(GroupsRecord.class);
+    if (updatedGroup.isEmpty()) throw new GroupNotFoundException(GROUP_NOT_FOUND);
+    return GROUP_MAPPER.mapToGroup(updatedGroup.get());
   }
 }

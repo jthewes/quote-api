@@ -1,15 +1,14 @@
 package de.zedalite.quotes.data.mapper;
 
-import de.zedalite.quotes.data.jooq.tables.records.QuotesOfTheDayRecord;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import de.zedalite.quotes.data.jooq.quotes.tables.records.QuotesOfTheDayRecord;
 import de.zedalite.quotes.data.model.QuoteOfTheDay;
+import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
-
-import java.time.LocalDate;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class QuoteOfTheDayMapperTest {
 

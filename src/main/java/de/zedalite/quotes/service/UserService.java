@@ -1,106 +1,49 @@
 package de.zedalite.quotes.service;
 
-import de.zedalite.quotes.data.model.*;
-import de.zedalite.quotes.exceptions.ResourceAlreadyExitsException;
-import de.zedalite.quotes.exceptions.ResourceNotFoundException;
-import de.zedalite.quotes.exceptions.UserNotFoundException;
+import de.zedalite.quotes.data.mapper.UserMapper;
+import de.zedalite.quotes.data.model.User;
+import de.zedalite.quotes.data.model.UserResponse;
+import de.zedalite.quotes.data.model.UserUpdateRequest;
+import de.zedalite.quotes.exception.ResourceNotFoundException;
+import de.zedalite.quotes.exception.UserNotFoundException;
 import de.zedalite.quotes.repository.UserRepository;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService {
 
-  public static final String USER_ALREADY_EXITS = "User already exits";
+  private static final UserMapper USER_MAPPER = UserMapper.INSTANCE;
 
   private final UserRepository repository;
 
-  private final PasswordEncoder passwordEncoder;
-
-  private final AuthenticationManager authenticationManager;
-
-  private final JwtTokenService tokenService;
-
-  public UserService(final UserRepository repository,
-                     final PasswordEncoder passwordEncoder,
-                     final AuthenticationManager authenticationManager,
-                     final JwtTokenService tokenService) {
+  public UserService(final UserRepository repository) {
     this.repository = repository;
-    this.passwordEncoder = passwordEncoder;
-    this.authenticationManager = authenticationManager;
-    this.tokenService = tokenService;
   }
 
-  public AuthResponse authenticate(final AuthRequest request) throws AuthenticationException {
-    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.name(), request.password()));
-    final String token = tokenService.generateToken(request.name());
-    return new AuthResponse(token);
-  }
-
-  public AuthResponse refreshToken(final String username) {
-    final String token = tokenService.generateToken(username);
-    return new AuthResponse(token);
-  }
-
-  public User create(final UserRequest request) throws ResourceAlreadyExitsException {
+  public UserResponse find(final Integer id) throws ResourceNotFoundException {
     try {
-      if (repository.isUsernameTaken(request.name())) {
-        throw new ResourceAlreadyExitsException(USER_ALREADY_EXITS);
-      } else {
-        final UserRequest encodedRequest = request.withPassword(passwordEncoder.encode(request.password()));
-        return repository.save(encodedRequest);
-      }
-    } catch (UserNotFoundException ex) {
+      return getResponse(repository.findById(id));
+    } catch (final UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
     }
   }
 
-  public List<User> findAll() {
+  public UserResponse update(final Integer id, final UserUpdateRequest request) {
     try {
-      return repository.findAll();
-    } catch (UserNotFoundException ex) {
+      final User user = repository.findById(id);
+
+      final UserUpdateRequest updateRequest = new UserUpdateRequest(
+        Objects.requireNonNullElse(request.displayName(), user.displayName())
+      ); // only update updated fields
+
+      return getResponse(repository.update(id, updateRequest));
+    } catch (final UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
     }
   }
 
-  public User find(final Integer id) throws ResourceNotFoundException {
-    try {
-      return repository.findById(id);
-    } catch (UserNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
-  }
-
-  public User findByName(final String name) throws ResourceNotFoundException {
-    try {
-      return repository.findByName(name);
-    } catch (UserNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
-  }
-
-  public void updatePassword(final Integer id, final PasswordRequest request) {
-    try {
-      final User user = find(id);
-      final UserRequest userRequest = new UserRequest(user.name(), passwordEncoder.encode(request.password()), user.displayName());
-      repository.update(id, userRequest);
-    } catch (UserNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
-  }
-
-  public void updateDisplayName(final Integer id, final DisplayNameRequest request) {
-    try {
-      final User user = find(id);
-      final UserRequest userRequest = new UserRequest(user.name(), user.password(), request.displayName());
-      repository.update(id, userRequest);
-    } catch (UserNotFoundException ex) {
-      throw new ResourceNotFoundException(ex.getMessage());
-    }
+  private UserResponse getResponse(final User user) {
+    return USER_MAPPER.mapToResponse(user);
   }
 }

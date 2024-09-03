@@ -1,46 +1,21 @@
 package de.zedalite.quotes.config;
 
-import de.zedalite.quotes.auth.UserPrincipal;
-import de.zedalite.quotes.repository.UserRepository;
+import de.zedalite.quotes.security.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AuthenticationConfig {
 
-  private final UserRepository userRepository;
+  private final AuthenticationService authenticationService;
 
-  public AuthenticationConfig(UserRepository userRepository) {
-    this.userRepository = userRepository;
+  public AuthenticationConfig(final AuthenticationService authenticationService) {
+    this.authenticationService = authenticationService;
   }
 
   @Bean
   public UserDetailsService userDetailsService() {
-    return username -> new UserPrincipal(userRepository.findByName(username));
-  }
-
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder(10);
-  }
-
-  @Bean
-  public AuthenticationProvider authenticationProvider() {
-    final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(userDetailsService());
-    authProvider.setPasswordEncoder(passwordEncoder());
-    return authProvider;
-  }
-
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
+    return authenticationService::getUser;
   }
 }

@@ -5,15 +5,15 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.4</version>
+    <version>3.3.2</version>
     <relativePath/>
   </parent>
 
   <groupId>de.zedalite</groupId>
-  <artifactId>quote-api</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
-  <name>quote-api</name>
-  <description>Quote API</description>
+  <artifactId>quote-service</artifactId>
+  <version>1.16.0-SNAPSHOT</version>
+  <name>quote-service</name>
+  <description>Quote Service - A RESTful API acting as a link between the frontend and the datasource.</description>
   <packaging>jar</packaging>
 
   <properties>
@@ -28,15 +28,23 @@
     <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <!-- Dependencies -->
     <java-jwt.version>4.4.0</java-jwt.version>
-    <mapstruct.version>1.6.0.Beta1</mapstruct.version>
-    <springdoc-openapi-webmvc-ui.version>2.5.0</springdoc-openapi-webmvc-ui.version>
-    <firebase.version>9.2.0</firebase.version>
+    <jwks-rsa.version>0.22.1</jwks-rsa.version>
+    <mapstruct.version>1.6.0</mapstruct.version>
+    <springdoc-openapi-webmvc-ui.version>2.6.0</springdoc-openapi-webmvc-ui.version>
+    <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
     <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
-    <owasp-plugin.version>9.1.0</owasp-plugin.version>
+    <owasp-plugin.version>10.0.3</owasp-plugin.version>
+    <pitest.version>1.16.3</pitest.version>
+    <pitest-junit5-plugin.version>1.2.1</pitest-junit5-plugin.version>
+    <openapi-generator-plugin.version>7.8.0</openapi-generator-plugin.version>
+    <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
+    <prettier-maven-plugin.prettierJavaVersion>2.6.4</prettier-maven-plugin.prettierJavaVersion>
     <!-- Database -->
-    <db.url>jdbc:tc:postgresql:latest:///sakila?TC_TMPFS=/testtmpfs:rw&amp;TC_INITSCRIPT=file:${basedir}/src/main/resources/postgres-quote-database.sql</db.url>
+    <db.url>jdbc:tc:postgresql:latest:///sakila?TC_TMPFS=/testtmpfs:rw&amp;TC_INITSCRIPT=file:${basedir}/src/main/resources/database.sql</db.url>
     <db.username>quote</db.username>
     <db.password>secret_password</db.password>
+    <!-- Config -->
+    <plugin.prettier.goal>write</plugin.prettier.goal>
   </properties>
 
   <dependencies>
@@ -90,6 +98,11 @@
       <version>${java-jwt.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>jwks-rsa</artifactId>
+      <version>${jwks-rsa.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>${mapstruct.version}</version>
@@ -99,17 +112,14 @@
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
       <version>${springdoc-openapi-webmvc-ui.version}</version>
     </dependency>
+    <!-- compile -->
     <dependency>
-      <groupId>com.google.firebase</groupId>
-      <artifactId>firebase-admin</artifactId>
-      <version>${firebase.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.openapitools</groupId>
+      <artifactId>jackson-databind-nullable</artifactId>
+      <version>${jackson-databind-nullable.version}</version>
+      <scope>compile</scope>
     </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -148,6 +158,13 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jooq</groupId>
         <artifactId>jooq-codegen-maven</artifactId>
         <version>${jooq.version}</version>
@@ -169,13 +186,67 @@
           </jdbc>
           <generator>
             <database>
-              <inputSchema>public</inputSchema>
+              <schemata>
+                <schema>
+                  <inputSchema>users</inputSchema>
+                </schema>
+                <schema>
+                  <inputSchema>quotes</inputSchema>
+                </schema>
+              </schemata>
             </database>
             <target>
               <packageName>de.zedalite.quotes.data.jooq</packageName>
             </target>
           </generator>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/rest-specs/corbado-backend.yml</inputSpec>
+              <generatorName>java</generatorName>
+              <generateApiTests>false</generateApiTests>
+              <generateModelTests>false</generateModelTests>
+              <configOptions>
+                <library>restclient</library>
+                <invokerPackage>de.zedalite.auth.client</invokerPackage>
+                <apiPackage>de.zedalite.auth.client.api</apiPackage>
+                <modelPackage>de.zedalite.auth.client.model</modelPackage>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.hubspot.maven.plugins</groupId>
+        <artifactId>prettier-maven-plugin</artifactId>
+        <version>${prettier-maven-plugin.version}</version>
+        <configuration>
+          <prettierJavaVersion>${prettier-maven-plugin.prettierJavaVersion}</prettierJavaVersion>
+          <printWidth>120</printWidth>
+          <tabWidth>2</tabWidth>
+          <useTabs>false</useTabs>
+          <endOfLine>lf</endOfLine>
+          <ignoreConfigFile>true</ignoreConfigFile>
+          <ignoreEditorConfig>true</ignoreEditorConfig>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>${plugin.prettier.goal}</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -208,6 +279,39 @@
       </build>
     </profile>
     <profile>
+      <id>pitest</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <version>${pitest.version}</version>
+            <dependencies>
+              <dependency>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-junit5-plugin</artifactId>
+                <version>${pitest-junit5-plugin.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <threads>4</threads>
+              <timestampedReports>false</timestampedReports>
+              <excludedClasses>de.zedalite.quotes.data.jooq*</excludedClasses>
+            </configuration>
+            <executions>
+              <execution>
+                <id>pitest</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>mutationCoverage</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>owasp-check</id>
       <build>
         <plugins>
@@ -216,7 +320,8 @@
             <artifactId>dependency-check-maven</artifactId>
             <version>${owasp-plugin.version}</version>
             <configuration>
-              <failBuildOnCVSS>8</failBuildOnCVSS>
+              <failBuildOnCVSS>8.9</failBuildOnCVSS>
+              <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
             </configuration>
             <executions>
               <execution>
@@ -229,5 +334,11 @@
         </plugins>
       </build>
     </profile>
+      <profile>
+        <id>prettier</id>
+        <properties>
+          <plugin.prettier.goal>check</plugin.prettier.goal>
+        </properties>
+      </profile>
   </profiles>
 </project>

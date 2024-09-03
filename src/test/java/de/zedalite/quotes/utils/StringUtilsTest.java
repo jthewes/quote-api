@@ -1,12 +1,11 @@
 package de.zedalite.quotes.utils;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class StringUtilsTest {
 
@@ -23,7 +22,7 @@ class StringUtilsTest {
 
     final List<Integer> userIds = StringUtils.extractUserIds(text);
 
-    assertThat(userIds).containsAll(List.of(2,2313,13,3));
+    assertThat(userIds).containsAll(List.of(2, 2313, 13, 3));
   }
 
   @Test
@@ -46,4 +45,36 @@ class StringUtilsTest {
     assertThat(userIds).isEmpty();
   }
 
+  @Test
+  @DisplayName("Should truncate string longer than specified length")
+  void shouldTruncateStringLongerThanSpecifiedLength() {
+    final String text = "The quick brown fox jumps over the lazy dog.";
+    final int length = 10;
+
+    final String result = StringUtils.truncate(text, length);
+
+    assertThat(result).isEqualTo("The quick ");
+  }
+
+  @Test
+  @DisplayName("Should not truncate string equal to specified length")
+  void shouldNotTruncateStringEqualToSpecifiedLength() {
+    final String text = "The quick";
+    final int length = 9;
+
+    final String result = StringUtils.truncate(text, length);
+
+    assertThat(result).isEqualTo(text);
+  }
+
+  @Test
+  @DisplayName("Should handle empty string")
+  void shouldHandleEmptyString() {
+    final String text = "";
+    final int length = 10;
+
+    final String result = StringUtils.truncate(text, length);
+
+    assertThat(result).isEqualTo(text);
+  }
 }

@@ -13,18 +13,21 @@ public final class StringUtils {
   private static final Pattern USER_ID_PATTERN = Pattern.compile("<@(\\d+)>");
 
   public static List<Integer> extractUserIds(final String text) {
-    return USER_ID_PATTERN
-      .matcher(text)
+    return USER_ID_PATTERN.matcher(text)
       .results()
       .map(result -> parseToInt(result.group(1)))
       .filter(Objects::nonNull)
       .toList();
   }
 
-  private static Integer parseToInt(String number) {
+  public static String truncate(final String text, final int length) {
+    return text.length() > length ? text.substring(0, length) : text;
+  }
+
+  private static Integer parseToInt(final String number) {
     try {
       return Integer.parseInt(number);
-    } catch(NumberFormatException e) {
+    } catch (final NumberFormatException e) {
       return null;
     }
   }

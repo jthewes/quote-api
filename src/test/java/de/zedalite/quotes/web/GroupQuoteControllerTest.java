@@ -1,26 +1,28 @@
 package de.zedalite.quotes.web;
 
-import de.zedalite.quotes.auth.UserPrincipal;
-import de.zedalite.quotes.data.model.QuoteMessage;
-import de.zedalite.quotes.data.model.QuoteRequest;
-import de.zedalite.quotes.data.model.SortField;
-import de.zedalite.quotes.data.model.SortOrder;
+import static de.zedalite.quotes.data.model.FilterKey.*;
+import static de.zedalite.quotes.data.model.SortField.CREATION_DATE;
+import static de.zedalite.quotes.data.model.SortMode.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willReturn;
+
+import de.zedalite.quotes.data.model.*;
 import de.zedalite.quotes.fixtures.QuoteGenerator;
 import de.zedalite.quotes.fixtures.UserGenerator;
 import de.zedalite.quotes.service.GroupQuoteService;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willReturn;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class GroupQuoteControllerTest {
@@ -34,33 +36,42 @@ class GroupQuoteControllerTest {
   @Test
   @DisplayName("Should get group quotes")
   void shouldGetGroupQuotes() {
-    final List<QuoteMessage> expectedQuotes = QuoteGenerator.getQuoteMessages();
-    willReturn(expectedQuotes).given(service).findAll(anyInt(), any(SortField.class), any(SortOrder.class));
+    final List<QuoteResponse> expectedQuotes = QuoteGenerator.getQuoteResponses();
+    willReturn(expectedQuotes)
+      .given(service)
+      .findAll(anyInt(), any(FilterKey.class), anyString(), any(SortField.class), any(SortMode.class));
 
-    instance.getQuotes(1, SortField.CREATION_DATE, SortOrder.ASC);
+    final ResponseEntity<List<QuoteResponse>> response = instance.getAll(1, CREATOR, "1", CREATION_DATE, ASCENDING);
 
-    then(service).should().findAll(1, SortField.CREATION_DATE, SortOrder.ASC);
+    then(service).should().findAll(1, CREATOR, "1", CREATION_DATE, ASCENDING);
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
   @Test
   @DisplayName("Should get group quote")
   void shouldGetGroupQuote() {
-    final QuoteMessage expectedQuote = QuoteGenerator.getQuoteMessage();
+    final QuoteResponse expectedQuote = QuoteGenerator.getQuoteResponse();
     willReturn(expectedQuote).given(service).find(anyInt(), anyInt());
 
-    instance.getQuote(1, 8);
+    final ResponseEntity<QuoteResponse> response = instance.get(1, 8);
 
     then(service).should().find(1, 8);
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
   @Test
   @DisplayName("Should get quote count")
   void shouldGetQuoteCount() {
-    willReturn(5).given(service).count(anyInt());
+    final CountResponse count = new CountResponse(5);
+    willReturn(count).given(service).count(anyInt());
 
-    instance.getQuotesCount(1);
+    final ResponseEntity<CountResponse> response = instance.getQuotesCount(1);
 
     then(service).should().count(1);
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 
   @Test
@@ -68,22 +79,13 @@ class GroupQuoteControllerTest {
   void shouldPostGroupQuote() {
     final QuoteRequest quoteRequest = QuoteGenerator.getQuoteRequest();
     final UserPrincipal principal = UserGenerator.getUserPrincipal();
-    final QuoteMessage expectedQuote = QuoteGenerator.getQuoteMessage();
+    final QuoteResponse expectedQuote = QuoteGenerator.getQuoteResponse();
     willReturn(expectedQuote).given(service).create(anyInt(), any(QuoteRequest.class), anyInt());
 
-    instance.postQuote(1, quoteRequest, principal);
+    final ResponseEntity<QuoteResponse> response = instance.createQuote(1, quoteRequest, principal);
 
     then(service).should().create(1, quoteRequest, 1);
-  }
-
-  @Test
-  @DisplayName("Should get random group quotes")
-  void shouldGetRandomGroupQuotes() {
-    final List<QuoteMessage> expectedQuote = QuoteGenerator.getQuoteMessages();
-    willReturn(expectedQuote).given(service).findRandoms(anyInt(), anyInt());
-
-    instance.getRandomQuotes(1, 8);
-
-    then(service).should().findRandoms(1, 8);
+    assertThat(response).isNotNull();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
 }

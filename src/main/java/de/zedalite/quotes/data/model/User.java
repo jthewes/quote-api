@@ -1,37 +1,25 @@
 package de.zedalite.quotes.data.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-
 import java.time.LocalDateTime;
 
 @JsonSerialize
 @JsonDeserialize
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record User(
-  @NotNull
-  @PositiveOrZero
-  Integer id,
+  @Schema(description = "Unique identifier", example = "5") @NotNull @PositiveOrZero Integer id,
 
-  @NotBlank
-  @Size(max = 32)
-  String name,
+  @Schema(description = "Unique name", example = "usr-1657423234892438243") @NotBlank @Size(max = 32) String authId,
 
-  @JsonIgnore
-  @NotBlank
-  @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z]).{8,128}$", message = "must contain letters and numbers with length between 8-128")
-  String password,
-
+  @Schema(description = "Visual presentation of the name", example = "The real Scott")
   @NotBlank
   @Size(max = 32)
   String displayName,
 
+  @Schema(description = "Creation date", example = "2024-03-20T14:13:50.213Z")
   @NotNull
   @PastOrPresent
   LocalDateTime creationDate
-
-) {
-}
+) {}

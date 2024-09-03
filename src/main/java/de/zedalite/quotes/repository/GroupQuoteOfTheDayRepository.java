@@ -1,26 +1,26 @@
 package de.zedalite.quotes.repository;
 
-import de.zedalite.quotes.data.jooq.tables.Quotes;
-import de.zedalite.quotes.data.jooq.tables.QuotesOfTheDay;
-import de.zedalite.quotes.data.jooq.tables.records.QuotesOfTheDayRecord;
+import de.zedalite.quotes.data.jooq.quotes.tables.Quotes;
+import de.zedalite.quotes.data.jooq.quotes.tables.QuotesOfTheDay;
+import de.zedalite.quotes.data.jooq.quotes.tables.records.QuotesOfTheDayRecord;
 import de.zedalite.quotes.data.mapper.QuoteOfTheDayMapper;
 import de.zedalite.quotes.data.model.Quote;
 import de.zedalite.quotes.data.model.QuoteOfTheDay;
 import de.zedalite.quotes.data.model.QuoteOfTheDayRequest;
-import de.zedalite.quotes.exceptions.QotdNotFoundException;
-import org.jooq.DSLContext;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Repository;
-
+import de.zedalite.quotes.exception.QotdNotFoundException;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.jooq.DSLContext;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class GroupQuoteOfTheDayRepository {
 
   private static final QuoteOfTheDayMapper QOTD_MAPPER = QuoteOfTheDayMapper.INSTANCE;
 
-  private static final Quotes QUOTES = Quotes.QUOTES.as("quotes");
+  private static final Quotes QUOTES = Quotes.QUOTES_.as("quotes");
 
   private static final QuotesOfTheDay QOTD = QuotesOfTheDay.QUOTES_OF_THE_DAY.as("quotes_of_the_day");
 
@@ -32,8 +32,10 @@ public class GroupQuoteOfTheDayRepository {
     this.dsl = dsl;
   }
 
+  @CachePut(value = "qotd", key = "{#result.id(),#result.creationDate()}", unless = "#result == null")
   public QuoteOfTheDay save(final Integer id, final QuoteOfTheDayRequest request) {
-    final Optional<QuotesOfTheDayRecord> savedQotd = dsl.insertInto(QOTD)
+    final Optional<QuotesOfTheDayRecord> savedQotd = dsl
+      .insertInto(QOTD)
       .set(QOTD.GROUP_ID, id)
       .set(QOTD.QUOTE_ID, request.quoteId())
       .set(QOTD.CREATION_DATE, request.creationDate())
@@ -45,7 +47,8 @@ public class GroupQuoteOfTheDayRepository {
 
   @Cacheable(value = "qotd", key = "{#id,#date}", unless = "#result == null")
   public Quote findByDate(final Integer id, final LocalDate date) throws QotdNotFoundException {
-    final Optional<Quote> qotd = dsl.select(QUOTES)
+    final Optional<Quote> qotd = dsl
+      .select(QUOTES)
       .from(QOTD.join(QUOTES).on(QOTD.QUOTE_ID.eq(QUOTES.ID)))
       .where(QOTD.GROUP_ID.eq(id))
       .and(QOTD.CREATION_DATE.eq(date))

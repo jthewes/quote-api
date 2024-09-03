@@ -1,33 +1,22 @@
 package de.zedalite.quotes.scheduling;
 
-import de.zedalite.quotes.service.GroupQuoteOfTheDayService;
-import de.zedalite.quotes.service.GroupService;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import static org.mockito.BDDMockito.then;
-
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(OutputCaptureExtension.class)
 class QuoteOfTheDaySchedulerTest {
 
-  @InjectMocks
-  private QuoteOfTheDayScheduler instance;
-
-  @Mock
-  private GroupService groupService;
-
-  @Mock
-  private GroupQuoteOfTheDayService groupQuoteOfTheDayService;
+  private final QuoteOfTheDayScheduler instance = new QuoteOfTheDayScheduler();
 
   @Test
   @DisplayName("Should reset quoteOfTheDay")
-  void shouldResetQuoteOfTheDay() {
+  void shouldResetQuoteOfTheDayCache(final CapturedOutput output) {
     instance.resetQuoteOfTheDay();
-
-    then(groupService).should().findAllIds();
+    assertThat(output).contains("Cache evicted for quote of the day.");
   }
 }

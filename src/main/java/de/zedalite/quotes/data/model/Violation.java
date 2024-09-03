@@ -1,20 +1,14 @@
 package de.zedalite.quotes.data.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 @JsonSerialize
 @JsonDeserialize
-@JsonInclude(JsonInclude.Include.NON_ABSENT)
 public record Violation(
+  @Schema(description = "Field name", example = "name") @NotNull String field,
 
-  @NotNull
-  String field,
-
-  @NotNull
-  String message
-
-) {
-}
+  @Schema(description = "Explanation", example = "size must be between 0 and 32") @NotNull String message
+) {}
