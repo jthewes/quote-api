@@ -1,7 +1,8 @@
 package de.zedalite.quotes.web;
 
 import de.zedalite.quotes.data.model.ErrorResponse;
-import de.zedalite.quotes.data.model.GroupRequest;
+import de.zedalite.quotes.data.model.GroupCreationRequest;
+import de.zedalite.quotes.data.model.GroupInviteRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
 import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.UserPrincipal;
@@ -13,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -142,7 +141,7 @@ public class GroupController {
   )
   @PostMapping
   public ResponseEntity<GroupResponse> createGroup(
-    @RequestBody @Valid final GroupRequest request,
+    @RequestBody @Valid final GroupCreationRequest request,
     @AuthenticationPrincipal final UserPrincipal principal
   ) {
     return ResponseEntity.ok(service.create(request, principal.getId()));
@@ -182,10 +181,10 @@ public class GroupController {
   )
   @PostMapping("invite")
   public ResponseEntity<GroupResponse> joinGroup(
-    @RequestParam @Size(min = 1, max = 8) final String code,
+    @RequestBody @Valid final GroupInviteRequest request,
     @AuthenticationPrincipal final UserPrincipal principal
   ) {
-    return ResponseEntity.ok(service.join(code, principal.getId()));
+    return ResponseEntity.ok(service.join(request, principal.getId()));
   }
 
   @Operation(

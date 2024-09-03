@@ -13,6 +13,8 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
 import de.zedalite.quotes.data.model.Group;
+import de.zedalite.quotes.data.model.GroupCreationRequest;
+import de.zedalite.quotes.data.model.GroupInviteRequest;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
@@ -53,37 +55,43 @@ class GroupServiceTest {
   @Test
   @DisplayName("Should create group with creator")
   void shouldCreateGroupWithCreator() {
-    final GroupRequest groupRequest = GroupGenerator.getGroupRequest();
-    final Group expectedGroup = GroupGenerator.getGroup();
-    final User expectedUser = UserGenerator.getUser();
+    final GroupCreationRequest groupCreationRequest = mock(GroupCreationRequest.class);
+    final Group expectedGroup = mock(Group.class);
+    final User expectedUser = mock(User.class);
+
     willReturn(expectedGroup).given(groupRepository).save(any(GroupRequest.class), anyInt());
-    willReturn(expectedUser).given(userRepository).findById(anyInt());
 
-    final GroupResponse result = instance.create(groupRequest, 1);
+    final GroupResponse result = instance.create(groupCreationRequest, expectedUser.id());
 
-    then(groupRepository).should().save(groupRequest, 1);
-    then(groupMemberRepository).should().save(expectedGroup.id(), new GroupMemberRequest(1, null));
+    then(groupRepository)
+      .should()
+      .save(new GroupRequest(groupCreationRequest.displayName(), groupCreationRequest.inviteCode()), expectedUser.id());
+    then(groupMemberRepository)
+      .should()
+      .save(expectedGroup.id(), new GroupMemberRequest(expectedUser.id(), groupCreationRequest.userDisplayName()));
     assertThat(result).isNotNull();
   }
 
   @Test
   @DisplayName("Should throw exception when group not created")
   void shouldThrowExceptionWhenGroupNotCreated() {
-    final GroupRequest groupRequest = GroupGenerator.getGroupRequest();
+    final GroupCreationRequest groupCreationRequest = mock(GroupCreationRequest.class);
+
     willThrow(GroupNotFoundException.class).given(groupRepository).save(any(GroupRequest.class), anyInt());
 
-    assertThatCode(() -> instance.create(groupRequest, 1)).isInstanceOf(ResourceNotFoundException.class);
+    assertThatCode(() -> instance.create(groupCreationRequest, 1)).isInstanceOf(ResourceNotFoundException.class);
   }
 
   @Test
   @DisplayName("Should throw exception when group created but user not joined")
   void shouldThrowExceptionWhenGroupCreatedButUserNotJoined() {
-    final GroupRequest groupRequest = GroupGenerator.getGroupRequest();
+    final GroupCreationRequest groupCreationRequest = mock(GroupCreationRequest.class);
+
     final Group expectedGroup = GroupGenerator.getGroup();
     willReturn(expectedGroup).given(groupRepository).save(any(GroupRequest.class), anyInt());
     willThrow(UserNotFoundException.class).given(groupMemberRepository).save(anyInt(), any(GroupMemberRequest.class));
 
-    assertThatCode(() -> instance.create(groupRequest, 1)).isInstanceOf(ResourceNotFoundException.class);
+    assertThatCode(() -> instance.create(groupCreationRequest, 1)).isInstanceOf(ResourceNotFoundException.class);
   }
 
   @Test
@@ -160,47 +168,48 @@ class GroupServiceTest {
   @Test
   @DisplayName("Should allow user to join group")
   void shouldAllowUserToJoinGroup() {
-    final Group expectedGroup = GroupGenerator.getGroup();
-    final User expectedUser = UserGenerator.getUser();
-    final String code = "testCode";
-    final Integer userId = 1;
+    final Group expectedGroup = mock(Group.class);
+    final User expectedUser = mock(User.class);
+    final GroupInviteRequest request = mock(GroupInviteRequest.class);
 
+    willReturn("testCode").given(request).inviteCode();
     willReturn(expectedGroup).given(groupRepository).findByCode(anyString());
     willReturn(false).given(groupMemberRepository).isMember(anyInt(), anyInt());
-    willReturn(expectedUser).given(userRepository).findById(anyInt());
 
-    final GroupResponse result = instance.join(code, userId);
+    final GroupResponse result = instance.join(request, expectedUser.id());
 
-    then(groupRepository).should().findByCode(code);
-    then(groupMemberRepository).should().save(expectedGroup.id(), new GroupMemberRequest(userId, null));
+    then(groupRepository).should().findByCode(request.inviteCode());
+    then(groupMemberRepository).should().save(expectedGroup.id(), new GroupMemberRequest(expectedUser.id(), null));
     assertThat(result).isNotNull();
   }
 
   @Test
   @DisplayName("Should throw exception when user already in group")
   void shouldThrowExceptionWhenUserAlreadyInGroup() {
-    final Group expectedGroup = GroupGenerator.getGroup();
-    final String code = "testCode";
-    final Integer userId = 1;
+    final Group expectedGroup = mock(Group.class);
+    final User expectedUser = mock(User.class);
+    final GroupInviteRequest request = mock(GroupInviteRequest.class);
 
+    willReturn("takenCode").given(request).inviteCode();
     willReturn(expectedGroup).given(groupRepository).findByCode(anyString());
     willReturn(true).given(groupMemberRepository).isMember(anyInt(), anyInt());
 
     assertThatExceptionOfType(ResourceAlreadyExitsException.class)
-      .isThrownBy(() -> instance.join(code, userId))
+      .isThrownBy(() -> instance.join(request, expectedUser.id()))
       .withMessage("User is already a group member");
   }
 
   @Test
   @DisplayName("Should throw exception when group does not exist")
   void shouldThrowExceptionWhenGroupDoesNotExist() {
-    final String code = "nonExistentCode";
-    final Integer userId = 1;
+    final User expectedUser = mock(User.class);
+    final GroupInviteRequest request = mock(GroupInviteRequest.class);
 
+    willReturn("nonExistent").given(request).inviteCode();
     willThrow(new GroupNotFoundException("Group not found")).given(groupRepository).findByCode(anyString());
 
     assertThatExceptionOfType(ResourceNotFoundException.class)
-      .isThrownBy(() -> instance.join(code, userId))
+      .isThrownBy(() -> instance.join(request, expectedUser.id()))
       .withMessage("Group not found");
   }
 

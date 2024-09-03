@@ -7,7 +7,8 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 
-import de.zedalite.quotes.data.model.GroupRequest;
+import de.zedalite.quotes.data.model.GroupCreationRequest;
+import de.zedalite.quotes.data.model.GroupInviteRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
 import de.zedalite.quotes.data.model.GroupUpdateRequest;
 import de.zedalite.quotes.data.model.UserPrincipal;
@@ -49,15 +50,15 @@ class GroupControllerTest {
   @Test
   @DisplayName("Should post group")
   void shouldPostGroup() {
-    final GroupRequest groupRequest = GroupGenerator.getGroupRequest();
-    final GroupResponse expectedGroup = GroupGenerator.getGroupResponse();
-    final UserPrincipal principal = UserGenerator.getUserPrincipal();
+    final GroupCreationRequest groupRequest = mock(GroupCreationRequest.class);
+    final GroupResponse expectedGroup = mock(GroupResponse.class);
+    final UserPrincipal principal = mock(UserPrincipal.class);
 
-    willReturn(expectedGroup).given(service).create(any(GroupRequest.class), anyInt());
+    willReturn(expectedGroup).given(service).create(any(GroupCreationRequest.class), anyInt());
 
     final ResponseEntity<GroupResponse> response = instance.createGroup(groupRequest, principal);
 
-    then(service).should().create(groupRequest, 1);
+    then(service).should().create(groupRequest, principal.getId());
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -80,13 +81,15 @@ class GroupControllerTest {
   @Test
   @DisplayName("Should join group")
   void shouldJoinGroup() {
-    final GroupResponse expectedGroup = GroupGenerator.getGroupResponse();
-    final UserPrincipal principal = UserGenerator.getUserPrincipal();
-    willReturn(expectedGroup).given(service).join(any(String.class), anyInt());
+    final GroupResponse expectedGroup = mock(GroupResponse.class);
+    final GroupInviteRequest request = mock(GroupInviteRequest.class);
+    final UserPrincipal principal = mock(UserPrincipal.class);
 
-    final ResponseEntity<GroupResponse> response = instance.joinGroup("code", principal);
+    willReturn(expectedGroup).given(service).join(any(GroupInviteRequest.class), anyInt());
 
-    then(service).should().join("code", principal.getId());
+    final ResponseEntity<GroupResponse> response = instance.joinGroup(request, principal);
+
+    then(service).should().join(request, principal.getId());
     assertThat(response).isNotNull();
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
   }

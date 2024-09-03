@@ -2,6 +2,8 @@ package de.zedalite.quotes.service;
 
 import de.zedalite.quotes.data.mapper.GroupMapper;
 import de.zedalite.quotes.data.model.Group;
+import de.zedalite.quotes.data.model.GroupCreationRequest;
+import de.zedalite.quotes.data.model.GroupInviteRequest;
 import de.zedalite.quotes.data.model.GroupMemberRequest;
 import de.zedalite.quotes.data.model.GroupRequest;
 import de.zedalite.quotes.data.model.GroupResponse;
@@ -38,10 +40,10 @@ public class GroupService {
     this.groupMemberRepository = groupMemberRepository;
   }
 
-  public GroupResponse create(final GroupRequest request, final Integer creatorId) {
+  public GroupResponse create(final GroupCreationRequest request, final Integer creatorId) {
     try {
-      final Group group = repository.save(request, creatorId);
-      groupMemberRepository.save(group.id(), new GroupMemberRequest(creatorId, null));
+      final Group group = repository.save(new GroupRequest(request.displayName(), request.inviteCode()), creatorId);
+      groupMemberRepository.save(group.id(), new GroupMemberRequest(creatorId, request.userDisplayName()));
       return getResponse(group, getUser(group.creatorId()));
     } catch (final GroupNotFoundException | UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());
@@ -80,14 +82,14 @@ public class GroupService {
     return creator;
   }
 
-  public GroupResponse join(final String code, final Integer userId) {
+  public GroupResponse join(final GroupInviteRequest request, final Integer userId) {
     try {
-      final Group group = repository.findByCode(code);
+      final Group group = repository.findByCode(request.inviteCode());
 
       if (groupMemberRepository.isMember(group.id(), userId)) {
         throw new ResourceAlreadyExitsException("User is already a group member");
       }
-      groupMemberRepository.save(group.id(), new GroupMemberRequest(userId, null));
+      groupMemberRepository.save(group.id(), new GroupMemberRequest(userId, request.userDisplayName()));
       return getResponse(group, getUser(group.creatorId()));
     } catch (final GroupNotFoundException | UserNotFoundException ex) {
       throw new ResourceNotFoundException(ex.getMessage());

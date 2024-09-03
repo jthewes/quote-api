@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 @OpenAPIDefinition(
   info = @Info(
     title = "Quote API",
-    version = "1.15.0",
+    version = "1.16.0",
     description = "A RESTful API acting as a link between the frontend and the datasource"
   ),
   security = @SecurityRequirement(name = "bearerAuth")
